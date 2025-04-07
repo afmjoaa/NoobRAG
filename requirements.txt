@@ -1,0 +1,12 @@
+opensearch-py==2.8.0
+pinecone==5.4.2
+pinecone-client
+sentence-transformers
+transformers==4.45.2
+torch==2.5.1
+accelerate
+uvicorn
+fastapi
+python-dotenv
+ai71
+boto3==1.35.88
