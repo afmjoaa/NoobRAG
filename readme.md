@@ -8,9 +8,10 @@
 ## Development Checklist:
 
 
-  - [ ] Review and use [Indices Usage Examples](Operational_Instructions/Indices_Usage_Examples_for_LiveRAG.ipynb)
-  - [ ] Review and use [DM API Usage Example](Operational_Instructions/DM_API_usage_example.ipynb)
+  - [ ] Review and use [Indices Usage Examples](https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/Indices_Usage_Examples_for_LiveRAG.ipynb)
+  - [ ] Review and use [DM API Usage Example](https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/DM_API_usage_example.ipynb)
   - [ ] Complete the basic flow of RAG
+  - [ ] Create a testing/benchmarking workflow
   - [ ] Figure out the best prompt strategy
        - [ ] Experiment with different prompt formats
        - [ ] Test few-shot and zero-shot prompting
