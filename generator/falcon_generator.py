@@ -2,20 +2,19 @@ from ai71 import AI71
 
 
 class FalconGenerator:
-    def __init__(self, api_key):
-        self.client = AI71(api_key)
-        self.model = "tiiuae/falcon-3-10b-instruct"
+    __API_KEY = "ai71-api-b1e07fa1-d007-41cd-8306-85fc952e12a6"
 
-    def generate(self, prompt, stream=False):
-        messages = [{"role": "system", "content": "You are a helpful assistant."}, {"role": "user", "content": prompt}]
+    def __init__(self, model_name: str = "tiiuae/falcon3-10b-instruct"):
+        self.client = AI71(self.__API_KEY)
+        self.model_name = model_name
+
+    def generate_answer(self, prompt: str) -> str:
         response = self.client.chat.completions.create(
-            model=self.model,
-            messages=messages,
-            stream=stream
+            model=self.model_name,
+            messages=[
+                {"role": "system", "content": "You are a knowledgeable assistant."},
+                {"role": "user", "content": prompt}
+            ]
         )
-        content = ""
-        for chunk in response:
-            delta_content = chunk.choices[0].delta.content
-            if delta_content:
-                content += delta_content
-        return content
+        return response.choices[0].message.content.strip()
+

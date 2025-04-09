@@ -20,9 +20,9 @@ class CombinedRetriever:
         self.dense_retriever = dense_retriever
         self.sparse_retriever = sparse_retriever
 
-    def retrieve(self, query: str, top_k: int = 5) -> List[Dict[str, Any]]:
-        num_dense = int(np.ceil(0.6 * top_k))
-        num_sparse = top_k - num_dense  # Remaining from sparse
+    def retrieve(self, query: str, top_k: int = 5, max_docs: int = 6) -> List[Dict[str, Any]]:
+        num_dense = int(np.ceil(0.6 * max_docs))
+        num_sparse = max_docs - num_dense  # Remaining from sparse
 
         seen_ids = set()
         docs = []
@@ -66,6 +66,10 @@ class CombinedRetriever:
 
         return docs
 
+    @staticmethod
+    def show_results(docs):
+        print("Combined docs :\n", docs)
+
 
 # Example usage:
 if __name__ == "__main__":
@@ -75,9 +79,6 @@ if __name__ == "__main__":
     combined_retriever = CombinedRetriever(dense_retriever, sparse_retriever)
 
     query = "What is a second brain?"
-    docs = combined_retriever.retrieve(query, top_k=5)
+    docs = combined_retriever.retrieve(query, top_k=5, max_docs=6)
     print("Combined docs :\n", docs)
 
-
-    prompt = build_prompt(query, docs, max_docs=5)
-    print("Generated Prompt:\n", prompt)
