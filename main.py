@@ -49,7 +49,9 @@ def getGeneratedAnswer(query: str, top_k: int, max_docs: int):
 if __name__ == "__main__":
     question = "What is a second brain?"
     # 3,3
-    top_k = 4
-    max_docs = 5
+    top_k = 3
+    max_docs = 3
     prompt, answer = getGeneratedAnswer(query=question, top_k=top_k, max_docs=max_docs)
-    save_to_csv(prompt, answer, filename="./data/generated_answers.csv")
+    # save_to_csv(prompt, answer, filename="./data/generated_answers.csv")
+    print(f"Prompt\n {prompt}\n\n")
+    print(f"Answer\n {answer}")

@@ -19,3 +19,5 @@ def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 5) -> s
         f"Question: {query}\n"
         "Answer:"
     )
+
+# A strict length limit of 200 tokens
