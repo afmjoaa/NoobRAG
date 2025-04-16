@@ -4,7 +4,7 @@ from retrievers.sparse_retriever import SparseRetriever
 from utils.combined_retriever import CombinedRetriever
 from utils.prompt_template import build_prompt
 from utils.save_to_file import save_to_csv
-
+import nltk
 
 def getDenseContext(query: str = "What is a second brain?", top_k: int = 5):
     # Dense Search Retriever
@@ -47,11 +47,14 @@ def getGeneratedAnswer(query: str, top_k: int, max_docs: int):
 
 
 if __name__ == "__main__":
-    question = "What is a second brain?"
-    # 3,3
-    top_k = 3
-    max_docs = 3
-    prompt, answer = getGeneratedAnswer(query=question, top_k=top_k, max_docs=max_docs)
-    # save_to_csv(prompt, answer, filename="./data/generated_answers.csv")
-    print(f"Prompt\n {prompt}\n\n")
-    print(f"Answer\n {answer}")
+    # question = "What is a second brain?"
+    # # 3,3
+    # top_k = 3
+    # max_docs = 3
+    # prompt, answer = getGeneratedAnswer(query=question, top_k=top_k, max_docs=max_docs)
+    # # save_to_csv(prompt, answer, filename="./data/generated_answers.csv")
+    # print(f"Prompt\n {prompt}\n\n")
+    # print(f"Answer\n {answer}")
+
+    # nltk.download('punkt')
+    nltk.download('punkt_tab')
