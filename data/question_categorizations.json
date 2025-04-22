@@ -1,0 +1,339 @@
+[
+  {
+    "categorization_name": "question_length",
+    "categories": [
+      {
+        "name": "short",
+        "description": "A short question with no more than 6 words.",
+        "probability": 0.4
+      },
+      {
+        "name": "long",
+        "description": "A long question with at least 7 words.",
+        "probability": 0.6
+      }
+    ]
+  },
+  {
+    "categorization_name": "answer_length",
+    "categories": [
+      {
+        "name": "concise",
+        "description": "Nature of question implies a short, direct answer (factoids, yes/no).",
+        "probability": 0.4
+      },
+      {
+        "name": "moderate",
+        "description": "Nature of question implies a paragraph or a few points (definitions, simple explanations).",
+        "probability": 0.4
+      },
+      {
+        "name": "detailed",
+        "description": "Nature of question implies a longer, more elaborate answer (complex explanations, comparisons, lists).",
+        "probability": 0.2
+      }
+    ]
+  },
+  {
+    "categorization_name": "question_formulation",
+    "categories": [
+      {
+        "name": "natural",
+        "description": "Phrased in the way people typically speak, reflecting everyday language use, without formal or artificial structure.",
+        "probability": 0.8
+      },
+      {
+        "name": "search query",
+        "description": "Phrased as a typed web query for search engines (only keywords, without punctuation and without a natural-sounding structure).",
+        "probability": 0.2
+      }
+    ]
+  },
+  {
+    "categorization_name": "multi-doc",
+    "categories": [
+      {
+        "name": "comparison",
+        "description": "A comparison question that requires comparing two related concepts or entities. The comparison must be natural and reasonable, i.e., comparing two entities by a common attribute which is meaningful and relevant to both entities. For example: 'Who is older, Glenn Hughes or Ross Lynch?', 'Are Pizhou and Jiujiang in the same province?', 'Pyotr Ilyich Tchaikovsky and Giuseppe Verdi have this profession in common'. The information required to answer the question needs to come from two documents, specifically, the first document must provide information about the first entity/concept, while the second must provide information about the second entity/concept.",
+        "probability": 0.5,
+        "is_multi_doc": true
+      },
+      {
+        "name": "multi-aspect",
+        "description": "A question about two different aspects of the same entity/concept. For example: 'What are the advantages of AI-powered diagnostics, and what are the associated risks of bias in medical decision-making?', 'How do cryptocurrencies enable financial inclusion, and what are the security risks associated with them?'. The information required to answer the question needs to come from two documents, specifically, the first document must provide information about the first aspect, while the second must provide information about the second aspect.",
+        "probability": 0.5,
+        "is_multi_doc": true
+      }
+    ]
+  },
+  {
+    "categorization_name": "answer_type",
+    "categories": [
+      {
+        "name": "factoid",
+        "description": "Question seeking a specific, concise fact (e.g., date, name, number, location).",
+        "probability": 0.4
+      },
+      {
+        "name": "definition",
+        "description": "Question asking for the meaning or explanation of a term or concept.",
+        "probability": 0.2
+      },
+      {
+        "name": "explanation",
+        "description": "Question asking for 'how' or 'why', requiring a more detailed explanation or reasoning.",
+        "probability": 0.25
+      },
+      {
+        "name": "list",
+        "description": "Question explicitly or implicitly asking for multiple items or examples.",
+        "probability": 0.15
+      }
+    ]
+  },
+  {
+    "categorization_name": "question_complexity",
+    "categories": [
+      {
+        "name": "simple_lookup",
+        "description": "Answer can likely be found directly stated in a single source.",
+        "probability": 0.5
+      },
+      {
+        "name": "requires_synthesis",
+        "description": "Answer requires combining information from multiple parts of a text or multiple sources.",
+        "probability": 0.3
+      },
+      {
+        "name": "requires_inference",
+        "description": "Answer is not explicitly stated and requires reasoning or deduction based on provided context.",
+        "probability": 0.2
+      }
+    ]
+  },
+  {
+    "categorization_name": "interrogative_type",
+    "categories": [
+      {
+        "name": "what_which",
+        "description": "Question starts with or is primarily about 'what' or 'which'.",
+        "probability": 0.3
+      },
+      {
+        "name": "who_whom",
+        "description": "Question is about a person or group.",
+        "probability": 0.1
+      },
+      {
+        "name": "when",
+        "description": "Question is about a time or date.",
+        "probability": 0.1
+      },
+      {
+        "name": "where",
+        "description": "Question is about a location.",
+        "probability": 0.1
+      },
+      {
+        "name": "how",
+        "description": "Question is about a process, method, or manner.",
+        "probability": 0.15
+      },
+      {
+        "name": "why",
+        "description": "Question is about a reason or cause.",
+        "probability": 0.1
+      },
+      {
+        "name": "yes_no",
+        "description": "Question can be answered with a simple 'yes' or 'no' (e.g., starts with 'Is', 'Are', 'Does').",
+        "probability": 0.1
+      },
+      {
+        "name": "other_implicit",
+        "description": "Question is implied or uses other phrasing (e.g., 'Tell me about...', command-based).",
+        "probability": 0.05
+      }
+    ]
+  },
+  {
+    "categorization_name": "topic_domain",
+    "categories": [
+      {
+        "name": "science_technology",
+        "description": "Relating to STEM fields, computing, nature.",
+        "probability": 0.25
+      },
+      {
+        "name": "history_geography",
+        "description": "Relating to past events, cultures, places.",
+        "probability": 0.15
+      },
+      {
+        "name": "arts_entertainment",
+        "description": "Relating to music, film, literature, pop culture.",
+        "probability": 0.2
+      },
+      {
+        "name": "social_sciences_humanities",
+        "description": "Relating to psychology, sociology, philosophy, politics.",
+        "probability": 0.15
+      },
+      {
+        "name": "everyday_practical",
+        "description": "Relating to practical advice, how-to, lifestyle, health.",
+        "probability": 0.2
+      },
+      {
+        "name": "other",
+        "description": "Topics not fitting well into other categories.",
+        "probability": 0.05
+      }
+    ]
+  },
+  {
+    "categorization_name": "temporal_focus",
+    "categories": [
+      {
+        "name": "historical",
+        "description": "Question relates to past events or information.",
+        "probability": 0.3
+      },
+      {
+        "name": "current",
+        "description": "Question relates to the present time or recent events.",
+        "probability": 0.4
+      },
+      {
+        "name": "future",
+        "description": "Question relates to future possibilities, predictions, or plans.",
+        "probability": 0.1
+      },
+      {
+        "name": "atemporal",
+        "description": "Question relates to concepts or facts not tied to a specific time (definitions, timeless truths).",
+        "probability": 0.2
+      }
+    ]
+  },
+  {
+    "categorization_name": "safety_sensitivity",
+    "categories": [
+      {
+        "name": "benign",
+        "description": "Standard informational question with no obvious safety concerns.",
+        "probability": 0.92
+      },
+      {
+        "name": "potentially_harmful",
+        "description": "Question relates to dangerous activities, illegal acts, or hate speech.",
+        "probability": 0.02
+      },
+      {
+        "name": "personal_privacy",
+        "description": "Question asks for or pertains to Personally Identifiable Information (PII) or sensitive personal situations.",
+        "probability": 0.03
+      },
+      {
+        "name": "controversial",
+        "description": "Question touches on highly debated social or political issues.",
+        "probability": 0.03
+      }
+    ]
+  },
+  {
+    "categorization_name": "constrained_question",
+    "categories": [
+      {
+        "name": "unconstrained",
+        "description": "Question asks for information without specific limitations.",
+        "probability": 0.7
+      },
+      {
+        "name": "format_constrained",
+        "description": "Question specifies the desired output format (e.g., 'list', 'table', 'summary', 'poem').",
+        "probability": 0.15
+      },
+      {
+        "name": "content_constrained",
+        "description": "Question includes specific inclusions, exclusions, or perspective requirements (e.g., 'excluding X', 'from the perspective of Y', 'for beginners').",
+        "probability": 0.15
+      }
+    ]
+  },
+  {
+    "categorization_name": "geographical_scope",
+    "categories": [
+      {
+        "name": "local",
+        "description": "Question specific to a city, neighborhood, or small area.",
+        "probability": 0.1
+      },
+      {
+        "name": "regional_national",
+        "description": "Question pertains to a state, province, country, or distinct region.",
+        "probability": 0.25
+      },
+      {
+        "name": "global",
+        "description": "Question has worldwide relevance or compares multiple countries/continents.",
+        "probability": 0.2
+      },
+      {
+        "name": "non_geographic",
+        "description": "Question does not have a specific geographical context.",
+        "probability": 0.45
+      }
+    ]
+  },
+  {
+    "categorization_name": "question_type",
+    "categories": [
+      {
+        "name": "open-ended",
+        "description": "Question that allows for a wide range of responses.",
+        "probability": 0.6
+      },
+      {
+        "name": "closed-ended",
+        "description": "Question that can be answered with a simple 'yes' or 'no', or a specific piece of information.",
+        "probability": 0.4
+      }
+    ]
+  },
+  {
+    "categorization_name": "topic_domain",
+    "categories": [
+      {
+        "name": "science_technology",
+        "description": "Relating to STEM fields, computing, nature.",
+        "probability": 0.25
+      },
+      {
+        "name": "history_geography",
+        "description": "Relating to past events, cultures, places.",
+        "probability": 0.15
+      },
+      {
+        "name": "arts_entertainment",
+        "description": "Relating to music, film, literature, pop culture.",
+        "probability": 0.2
+      },
+      {
+        "name": "social_sciences_humanities",
+        "description": "Relating to psychology, sociology, philosophy, politics.",
+        "probability": 0.15
+      },
+      {
+        "name": "everyday_practical",
+        "description": "Relating to practical advice, how-to, lifestyle, health.",
+        "probability": 0.2
+      },
+      {
+        "name": "other",
+        "description": "Topics not fitting well into other categories.",
+        "probability": 0.05
+      }
+    ]
+  }
+]
