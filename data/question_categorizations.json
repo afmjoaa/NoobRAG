@@ -300,40 +300,5 @@
         "probability": 0.4
       }
     ]
-  },
-  {
-    "categorization_name": "topic_domain",
-    "categories": [
-      {
-        "name": "science_technology",
-        "description": "Relating to STEM fields, computing, nature.",
-        "probability": 0.25
-      },
-      {
-        "name": "history_geography",
-        "description": "Relating to past events, cultures, places.",
-        "probability": 0.15
-      },
-      {
-        "name": "arts_entertainment",
-        "description": "Relating to music, film, literature, pop culture.",
-        "probability": 0.2
-      },
-      {
-        "name": "social_sciences_humanities",
-        "description": "Relating to psychology, sociology, philosophy, politics.",
-        "probability": 0.15
-      },
-      {
-        "name": "everyday_practical",
-        "description": "Relating to practical advice, how-to, lifestyle, health.",
-        "probability": 0.2
-      },
-      {
-        "name": "other",
-        "description": "Topics not fitting well into other categories.",
-        "probability": 0.05
-      }
-    ]
   }
 ]

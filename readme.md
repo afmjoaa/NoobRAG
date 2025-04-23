@@ -8,11 +8,11 @@
 ## Development Checklist:
 
 
-  - [ ] Review and use [Indices Usage Examples](https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/Indices_Usage_Examples_for_LiveRAG.ipynb)
-  - [ ] Review and use [DM API Usage Example](https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/DM_API_usage_example.ipynb)
-  - [ ] Complete the basic flow of RAG
+  - [x] Review and use [Indices Usage Examples](https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/Indices_Usage_Examples_for_LiveRAG.ipynb)
+  - [x] Review and use [DM API Usage Example](https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/DM_API_usage_example.ipynb)
+  - [x] Complete the basic flow of RAG
   - [ ] Create a testing/benchmarking workflow
-  - [ ] Figure out the best prompt strategy
+  - [ ] Figure out the best prompt strategy (We can only use 200 token max)
        - [ ] Experiment with different prompt formats
        - [ ] Test few-shot and zero-shot prompting
        - [ ] Evaluate prompt effectiveness on system performance

@@ -145,31 +145,6 @@
     ]
   },
   {
-    "categorization_name": "user_preferred_response_style_implied",
-    "categories": [
-      {
-        "name": "prefers_conciseness",
-        "description": "Asks very direct questions, uses keywords, implies need for a quick fact or definition.",
-        "probability": 0.3
-      },
-      {
-        "name": "prefers_explanation",
-        "description": "Asks 'why' or 'how', requests details, implies need for understanding.",
-        "probability": 0.4
-      },
-      {
-        "name": "prefers_list_or_steps",
-        "description": "Asks for examples, types, methods, or instructions.",
-        "probability": 0.2
-      },
-      {
-        "name": "prefers_structured_data",
-        "description": "Asks for comparisons, tables, pros/cons (often implicitly).",
-        "probability": 0.1
-      }
-    ]
-  },
-  {
     "categorization_name": "user_follow_up_likelihood_implied",
     "categories": [
       {
