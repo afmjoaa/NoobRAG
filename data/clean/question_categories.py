@@ -216,7 +216,7 @@ def select_random_question_categorizations():
     # Always include answer_type
     selected = [answer_type]
     # Randomly select 3 other categorizations
-    selected += random.sample(all_question_categorizations_except_answer_type, 3)
+    selected += random.sample(all_question_categorizations_except_answer_type, 4)
     return selected
 
 

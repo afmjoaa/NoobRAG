@@ -22,7 +22,7 @@ user_follow_up_likelihood = {
 }
 
 user_language_proficiency = {
-    "categorization_name": "user_language_proficiency_implied",
+    "categorization_name": "user_language_proficiency",
     "categories": [
         {
             "name": "english_native_fluent",
@@ -153,7 +153,6 @@ user_conversational_style = {
 
 all_user_categories = [
     user_follow_up_likelihood,
-    user_language_proficiency,
     user_expertise,
     user_preferred_response_style,
     user_intent,
@@ -162,8 +161,13 @@ all_user_categories = [
 
 
 def select_random_user_categories():
-    return random.sample(all_user_categories, 3)
+    # Always include answer_type
+    selected = [user_language_proficiency]
+    # Randomly select 3 other categorizations
+    selected += random.sample(all_user_categories, 3)
+    return selected
 
 
 # Example usage:
 # print(select_random_user_categories())
+
