@@ -3,6 +3,7 @@ from multiprocessing.pool import ThreadPool
 from functools import cache
 
 import torch
+import numpy as np
 from transformers import AutoModel, AutoTokenizer
 from pinecone import Pinecone
 
@@ -15,7 +16,7 @@ class DenseRetriever:
         model_name: str = "intfloat/e5-base-v2",
         index_name: str = "fineweb10bt-512-0w-e5-base-v2",
         namespace: str = "default",
-        query_prefix: str = "query: ",
+        query_prefix: str = "query:",
         pooling: Literal["cls", "avg"] = "avg",
         normalize: bool = True,
         pinecone_token_ssm_path: str = "/pinecone/ro_token",
@@ -71,7 +72,7 @@ class DenseRetriever:
         return last_hidden.sum(dim=1) / attention_mask.sum(dim=1)[..., None]
 
     def _embed(self, texts: List[str]) -> List[List[float]]:
-        inputs = [f"{self.query_prefix} {text}" for text in texts]
+        inputs = [f"{self.query_prefix} {text.strip()}" for text in texts]
         encoded = self.tokenizer(inputs, padding=True, return_tensors="pt", truncation="longest_first")
         encoded = encoded.to(self.model.device)
 
@@ -85,7 +86,21 @@ class DenseRetriever:
             if self.normalize:
                 embeddings = torch.nn.functional.normalize(embeddings, p=2, dim=1)
 
-        return embeddings.tolist()
+        return embeddings.cpu().tolist()
+
+    # ✅ NEW: Single embedding as numpy array
+    def embed_text(self, text: str) -> np.ndarray:
+        return np.array(self._embed([text])[0])
+
+    # ✅ NEW: Vector-based query (e.g. for HyDE fusion)
+    def query_by_vector(self, vector: np.ndarray, top_k: int = 10) -> Dict[str, Any]:
+        return self.index.query(
+            vector=vector.tolist(),
+            top_k=top_k,
+            include_values=False,
+            include_metadata=True,
+            namespace=self.namespace,
+        )
 
     def query(self, query: str, top_k: int = 10) -> Dict[str, Any]:
         vector = self._embed([query])[0]

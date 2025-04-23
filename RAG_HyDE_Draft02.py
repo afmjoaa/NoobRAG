@@ -21,7 +21,7 @@ def get_generator(model_name: str = "mistral"):
 
 def generate_hypothetical_answer(query: str) -> str:
     generator = get_generator("mistral")
-    prompt = f"Generate a detailed hypothetical answer to the following question:\n\n{query}\n\nAnswer:"
+    prompt = f"Generate a 3 lines hypothetical answer to the following question:\n\n{query}\n\nAnswer:"
     hypothetical_answer = generator.generate_answer(prompt)
     
     # Print the generated hypothetical answer and the model used
@@ -72,7 +72,7 @@ def decompose_query(query: str):
     """
     generator = get_generator("mistral")
     decomposition_prompt = f"""
-You are a helpful assistant. Your task is to decompose the following query into smaller, clear, and meaningful sub-questions that together help answer the original query.
+You are a helpful assistant. Your task is to decompose the following query into 3 smaller, clear, and meaningful sub-questions that together help answer the original query.
 
 Original Query:
 "{query}"
