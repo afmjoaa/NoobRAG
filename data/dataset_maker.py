@@ -31,7 +31,7 @@ class JsonlDataset(Dataset):
     def save_to_jsonl(self, filepath):
         with open(filepath, 'w', encoding='utf-8') as f:
             for sample in self.samples:
-                f.write(json.dumps(sample) + '\n')
+                f.write(json.dumps(sample, ensure_ascii=False) + '\n')
 
 
 if __name__ == "__main__":
