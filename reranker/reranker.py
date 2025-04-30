@@ -173,3 +173,7 @@ if __name__ == "__main__":
 # reranker is giving a score to each sentence.
 # so for loss we can use this score or we may use the last generation of the model??
 # which one should we use ??
+
+# nv-rerankqa-mistral-4b-v3
+# api key : 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
+# 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

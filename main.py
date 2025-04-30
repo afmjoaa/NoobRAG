@@ -6,6 +6,8 @@ from utils.prompt_template import build_prompt
 from utils.save_to_file import save_to_csv
 import nltk
 
+import gradio as gr
+
 def getDenseContext(query: str = "What is a second brain?", top_k: int = 5):
     # Dense Search Retriever
     dense_retriever = DenseRetriever()
@@ -46,15 +48,28 @@ def getGeneratedAnswer(query: str, top_k: int, max_docs: int):
     return prompt, answer
 
 
+def getResult(user_input):
+    question = user_input
+    # 3,3
+    top_k = 5
+    max_docs = 5
+    prompt, answer = getGeneratedAnswer(query=question, top_k=top_k, max_docs=max_docs)
+    # save_to_csv(prompt, answer, filename="./data/generated_answers.csv")
+    print(f"Prompt\n {prompt}\n\n")
+    print(f"Answer\n {answer}")
+    return answer
+
+
 if __name__ == "__main__":
-    # question = "What is a second brain?"
-    # # 3,3
-    # top_k = 3
-    # max_docs = 3
-    # prompt, answer = getGeneratedAnswer(query=question, top_k=top_k, max_docs=max_docs)
-    # # save_to_csv(prompt, answer, filename="./data/generated_answers.csv")
-    # print(f"Prompt\n {prompt}\n\n")
-    # print(f"Answer\n {answer}")
+    # gr.Interface(
+    #     fn=getResult,
+    #     inputs=gr.Textbox(label="Ask your legal question", lines=3, placeholder="Type in Bangla or English..."),
+    #     outputs=gr.Textbox(label="AI Answer"),
+    #     title="RuleBot: Legal AI Assistant",
+    #     description="Ask questions based on legal rules and case studies. AI will reference rules and relevant cases."
+    # ).launch()
+
+    getDenseContext()
 
     # nltk.download('punkt')
-    nltk.download('punkt_tab')
+    # nltk.download('punkt_tab')

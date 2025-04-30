@@ -114,6 +114,22 @@ class DenseRetriever:
     @staticmethod
     def show_results(results: Dict[str, Any]):
         for match in results.get("matches", []):
-            print("chunk:", match["id"], "score:", match["score"])
+            print("chunk:", match["metadata"].get("doc_id", ""), "score:", match["score"])
             print(match["metadata"].get("text", ""))
             print()
+
+
+# {'id': 'doc-<urn:uuid:0cf75b43-d690-4aa6-b3ca-f488ceb28ed9>::chunk-0',
+#  'metadata': {'chunk_order': 0.0,
+#               'doc_id': '<urn:uuid:0cf75b43-d690-4aa6-b3ca-f488ceb28ed9>',
+#               'is_first_chunk': True,
+#               'is_last_chunk': True,
+#               'text': 'What will the age of Aquarius be like. What is second '
+#                       'level consciousness and are we still there? Left and '
+#                       'Right Brain technology what is it? part 1\n'
+#                       "Sorry we couldn't complete your registration. Please "
+#                       'try again.\n'
+#                       'You must accept the Terms and conditions to register',
+#               'total_doc_chunks': 1.0},
+#  'score': 0.835362315,
+#  'values': []}

@@ -35,6 +35,7 @@ class CombinedRetriever:
             if doc_id not in seen_ids:
                 seen_ids.add(doc_id)
                 dense_docs.append({
+                    "doc_id": match["metadata"].get("doc_id", ""),
                     "text": match["metadata"].get("text", ""),
                     "score": match["score"],
                     "source": "dense"
@@ -54,6 +55,7 @@ class CombinedRetriever:
             if doc_id not in seen_ids:
                 seen_ids.add(doc_id)
                 sparse_docs.append({
+                    "doc_id": hit["_source"].get("doc_id", ""),
                     "text": hit["_source"].get("text", ""),
                     "score": float(normalized_scores[idx]),
                     "source": "sparse"

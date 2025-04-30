@@ -41,3 +41,6 @@
 - Answer length: unlimited but only the first 300 words will be
 evaluated
 - Answers file: question, passages, final prompt, answer
+
+- batch requesting falcon is possible see https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/Falcon_Ai71_Usage.ipynb
+- 
