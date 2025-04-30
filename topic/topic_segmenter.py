@@ -39,9 +39,9 @@ class TextTopicAnalyzer:
         vectorizer_model = CountVectorizer(stop_words="english", min_df=1)
 
         # Configure UMAP for small datasets
-        n_components = min(2, sentence_count - 1)
+        n_components = min(3, sentence_count - 1)
         umap_model = UMAP(
-            n_neighbors=min(5, sentence_count - 1),
+            n_neighbors=min(15, sentence_count - 1),
             n_components=n_components,
             min_dist=0.0,
             metric='cosine',
