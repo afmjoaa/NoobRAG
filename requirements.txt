@@ -4,3 +4,5 @@ transformers==4.45.2
 torch==2.5.1
 boto3==1.35.88
 ai71
+google-generativeai
+python-dotenv
