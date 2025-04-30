@@ -67,6 +67,7 @@ class SparseRetriever:
             print()
 
 
+# EXAMPLE OUTPUT
 # {
 #    "_index":"sigir-512-0w-e5-base-v2",
 #    "_id":"doc-<urn:uuid:3275960d-6467-4e26-b9e5-994945c7f377>::chunk-0",

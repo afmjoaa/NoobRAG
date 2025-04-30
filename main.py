@@ -69,7 +69,7 @@ if __name__ == "__main__":
     #     description="Ask questions based on legal rules and case studies. AI will reference rules and relevant cases."
     # ).launch()
 
-    getDenseContext()
+    getCombinedContext(max_docs=3)
 
     # nltk.download('punkt')
     # nltk.download('punkt_tab')

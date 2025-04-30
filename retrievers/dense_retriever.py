@@ -119,6 +119,7 @@ class DenseRetriever:
             print()
 
 
+# EXAMPLE OUTPUT
 # {'id': 'doc-<urn:uuid:0cf75b43-d690-4aa6-b3ca-f488ceb28ed9>::chunk-0',
 #  'metadata': {'chunk_order': 0.0,
 #               'doc_id': '<urn:uuid:0cf75b43-d690-4aa6-b3ca-f488ceb28ed9>',
