@@ -1,4 +1,4 @@
-import google.generativeai as genai
+import google.genai as genai  # Updated import
 import os
 import re
 import time
@@ -7,6 +7,8 @@ import itertools  # Added for cycling keys
 from collections import deque
 from concurrent.futures import ThreadPoolExecutor  # Added for parallel execution
 from dotenv import load_dotenv
+from google.genai import types as genai_types  # For potential error handling or types
+from google.api_core import exceptions as api_exceptions  # More specific exceptions
 
 # Load environment variables
 load_dotenv()
@@ -104,14 +106,15 @@ def get_llm_evaluation_score(prompt: str, api_key: str, model_name: str = "gemin
   try:
     _apply_rate_limit(api_key)  # Enforce rate limit for the specific key
 
-    # Configure genai locally for this call - IMPORTANT: This might not be thread-safe depending on library implementation.
-    # Consider creating a new client instance per thread if issues arise.
-    # For now, assuming configure is lightweight enough or handles threading internally.
-    genai.configure(api_key=api_key)
-    model = genai.GenerativeModel(model_name)
+    # Create a client instance for this specific call using the assigned API key
+    client = genai.Client(api_key=api_key)
 
-    response = model.generate_content(prompt)
+    # Use the client to generate content
+    response = client.models.generate_content(model=model_name, contents=prompt)
+
     # Attempt to extract the first integer found in the response text
+    # Accessing response text might differ slightly, adjust if needed based on actual response object
+    # Assuming response.text still works based on common patterns
     match = re.search(r'-?\d+', response.text.strip())
     if match:
       return int(match.group(0))
@@ -119,8 +122,12 @@ def get_llm_evaluation_score(prompt: str, api_key: str, model_name: str = "gemin
       print(
           f"Warning: Could not parse integer score from response (key ...{api_key[-4:]}): {response.text}")
       return None
+  # Catch more specific API errors if possible
+  except (api_exceptions.GoogleAPIError, genai_types.BlockedPromptError, genai_types.StopCandidateError) as e:
+    print(f"API Error during Gemini API call (key ...{api_key[-4:]}): {type(e).__name__} - {e}")
+    return None
   except Exception as e:
-    print(f"Error during Gemini API call (key ...{api_key[-4:]}): {e}")
+    print(f"Generic Error during Gemini API call (key ...{api_key[-4:]}): {type(e).__name__} - {e}")
     return None
 
 
