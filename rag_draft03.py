@@ -57,7 +57,7 @@ def getCombinedContext(query: str = "What is a second brain?", top_k: int = 5, m
         query_vec = dense_retriever.embed_text(decomposed_query)
         hyde_vec = dense_retriever.embed_text(hypothetical_answer)
 
-        # 4. Combine embeddings (90% decomposed + 10% HyDE)
+        # 4. Combine embeddings (70% decomposed + 30% HyDE)
         combined_vec = 0.7 * query_vec + 0.3 * hyde_vec
 
         # 5. Clean decomposed query for sparse search
