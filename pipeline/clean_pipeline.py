@@ -39,13 +39,13 @@ def refined_retrieval(query, classic_retrieved):
     refine_query_prompt = get_refine_query(query)
     refine_query = falcon_generator.generate_answer(refine_query_prompt)
     print(f"refined query: {refine_query}")
-    rq_docs = combined_retriever.retrieve(query=refine_query, top_k=9, max_docs=15)
+    rq_docs = combined_retriever.retrieve(query=refine_query, top_k=12, max_docs=20)
 
     # get the refined answer
     hypothetical_answer_prompt = get_hypothetical_answer(refine_query)
     hypothetical_answer = falcon_generator.generate_answer(hypothetical_answer_prompt)
     print(f"hypothetical answer: {hypothetical_answer}")
-    ha_docs = combined_retriever.retrieve(query=hypothetical_answer, top_k=9, max_docs=15)
+    ha_docs = combined_retriever.retrieve(query=hypothetical_answer, top_k=12, max_docs=20)
 
     # remove duplicate retrieval and create refined retrieval
     unique_docs = {}
@@ -65,7 +65,7 @@ def refined_retrieval(query, classic_retrieved):
 
     # print(len(classic_retrieved), classic_retrieved)
     # print(len(filtered_docs), filtered_docs)
-    return filtered_docs, refine_query
+    return filtered_docs[:20], refine_query
 
 
 def get_rerank_documents(query, retrieved_chunks, use_topic_combiner=True, use_mxbai_reranker=True):
