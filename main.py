@@ -3,10 +3,6 @@ from retrievers.dense_retriever import DenseRetriever
 from retrievers.sparse_retriever import SparseRetriever
 from utils.combined_retriever import CombinedRetriever
 from utils.prompt_template import build_prompt
-from utils.save_to_file import save_to_csv
-import nltk
-
-import gradio as gr
 
 def getDenseContext(query: str = "What is a second brain?", top_k: int = 5):
     # Dense Search Retriever

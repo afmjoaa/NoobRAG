@@ -54,15 +54,6 @@ class CorefResolver:
             raise
 
     def resolve_single_text(self, text: str) -> str:
-        """
-        Resolve coreferences in a single text.
-
-        Args:
-            text: The text to resolve coreferences in.
-
-        Returns:
-            A string with resolved coreferences.
-        """
         if not text.strip():
             return text
 
@@ -74,15 +65,6 @@ class CorefResolver:
             return text  # Return original text in case of error
 
     def resolve_documents(self, documents: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-        """
-        Process a list of documents, resolving coreferences in each document's text.
-
-        Args:
-            documents: A list of dictionaries, each containing at least a 'text' field.
-
-        Returns:
-            A list of dictionaries with the same structure but with resolved text.
-        """
         resolved_documents = []
 
         for doc in documents:
@@ -98,16 +80,6 @@ class CorefResolver:
         return resolved_documents
 
     def process_batch(self, documents: List[Dict[str, Any]], batch_size: int = 10) -> List[Dict[str, Any]]:
-        """
-        Process documents in batches for efficiency.
-
-        Args:
-            documents: A list of dictionaries, each containing at least a 'text' field.
-            batch_size: Number of documents to process in each batch.
-
-        Returns:
-            A list of dictionaries with the same structure but with resolved text.
-        """
         all_resolved_docs = []
 
         for i in range(0, len(documents), batch_size):
@@ -170,7 +142,7 @@ if __name__ == "__main__":
 
 
 
-
+# from fastcoref import spacy_component
 # import spacy
 #
 # text = """
@@ -183,17 +155,12 @@ if __name__ == "__main__":
 #              config={'model_architecture': 'LingMessCoref', 'model_path': 'biu-nlp/lingmess-coref', 'device': 'cpu'}
 # )
 #
-# # doc = nlp(text)
-# # print(doc._.coref_clusters)
-#
-# # nlp.add_pipe(
-# #    "fastcoref",
-# #    config={'model_architecture': 'LingMessCoref', 'model_path': 'biu-nlp/lingmess-coref', 'device': 'cpu'}
-# # )
-#
 # doc = nlp(      # for multiple texts use nlp.pipe
 #    text,
 #    component_cfg={"fastcoref": {'resolve_text': True}}
 # )
 #
 # print(doc._.resolved_text)
+
+
+# pip install spacy==3.7.4 fastcoref==2.1.6 transformers==4.34.1 torch

@@ -208,40 +208,30 @@ class TextTopicAnalyzer:
             combined_text = " ".join([sentence + "." for sentence in sentences])
             return {0: combined_text}
 
+    def resolve_topic(self, coref_resolved_docs):
+        expanded_results = []
+
+        for doc in coref_resolved_docs:
+            topic_paragraphs = self.analyze(doc.get("text", ""))
+            common_info = {
+                'doc_id': doc.get('doc_id', ''),
+                'score': doc.get('score', 0.0),
+                'source': doc.get('source', '')
+            }
+            expanded_results.extend({**common_info, 'text': para} for para in topic_paragraphs.values())
+        return expanded_results
+
 
 def get_topic_text_with_info():
     # Sample text chunk
     sample_documents = getCombinedContext(max_docs=3)
     # Coref resolution
     resolver = CorefResolver()
-    resolved_docs = resolver.resolve_documents(sample_documents)
+    coref_resolved_docs = resolver.resolve_documents(sample_documents)
     # Initialize the result list
-    expanded_results = []
-    for document in resolved_docs:
-        text_chunk = document.get("text", "")
-        # Create analyzer with verbose output
-        analyzer = TextTopicAnalyzer(verbose=False)
-
-        # Process the text and get topic paragraphs
-        topic_paragraphs = analyzer.analyze(text_chunk)
-
-        # print(topic_paragraphs)
-        # print(len(topic_paragraphs))
-
-        # Creating new list
-        doc_id = document.get('doc_id', '')
-        score = document.get('score', 0.0)
-        source = document.get('source', '')
-
-        for _, value in topic_paragraphs.items():
-            new_entry = {
-                'doc_id': doc_id,
-                'text': value,
-                'score': score,
-                'source': source,
-            }
-            expanded_results.append(new_entry)
-    return expanded_results
+    topic_analyzer = TextTopicAnalyzer(verbose=False)
+    segmented_docs = topic_analyzer.resolve_topic(coref_resolved_docs)
+    return segmented_docs
 
 
 # Example usage

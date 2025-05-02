@@ -1,5 +1,8 @@
 import csv
 import os
+import json
+
+from utils.utils import test_answer_path
 
 
 def save_to_csv(prompt, answer, filename='../data/generated_answer.csv'):
@@ -12,6 +15,12 @@ def save_to_csv(prompt, answer, filename='../data/generated_answer.csv'):
             writer.writeheader()
 
         writer.writerow({'prompt': prompt, 'answer': answer})
+
+
+def save_to_jsonl(final_output, file_path=test_answer_path):
+    with open(file_path, 'a', encoding='utf-8') as f:
+        json_line = json.dumps(final_output, ensure_ascii=False)
+        f.write(json_line + '\n')
 
 
 if __name__ == "__main__":
