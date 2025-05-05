@@ -131,18 +131,18 @@ def run_pipeline(questions_path, use_topic_combiner=True, use_mxbai_reranker=Tru
 
 
 if __name__ == "__main__":
+    # Run the full pipeline
+    run_pipeline(test_question_path)
+
     # # Test refined retrieval
     # query = "What is the difference between the default sampling rate used in audio CDs versus the recommended sampling rate for improving amp sim sound quality?"
     # retrieved_chunks = get_all_retrieved_chunks(query)
     # refined_retrieval(query, retrieved_chunks)
 
-    # # Run the full pipeline
-    # run_pipeline(test_question_path)
-
     # For single query test
-    query = "What is the difference between the default sampling rate used in audio CDs versus the recommended sampling rate for improving amp sim sound quality?"
-    question = {"id": 11, "question": query}
-    print(run_single(question, use_query_refinement=True))
+    # query = "What is the difference between the default sampling rate used in audio CDs versus the recommended sampling rate for improving amp sim sound quality?"
+    # question = {"id": 11, "question": query}
+    # print(run_single(question, use_query_refinement=True))
 
     # # get rerank document test
     # retrieved_chunks = get_all_retrieved_chunks(query)
