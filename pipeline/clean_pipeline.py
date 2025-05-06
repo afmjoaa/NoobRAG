@@ -12,6 +12,7 @@ from utils.prompt_template import build_prompt, get_refine_query, get_hypothetic
 from utils.save_to_file import save_to_jsonl
 from utils.utils import test_question_path, merge_scores_and_keep_positive
 import json
+import time
 
 # Global initialization of heavy components
 dense_retriever = DenseRetriever()
@@ -132,7 +133,7 @@ def run_pipeline(questions_path, use_topic_combiner=True, use_mxbai_reranker=Tru
 
 if __name__ == "__main__":
     # Run the full pipeline
-    run_pipeline(test_question_path)
+    # run_pipeline(test_question_path)
 
     # # Test refined retrieval
     # query = "What is the difference between the default sampling rate used in audio CDs versus the recommended sampling rate for improving amp sim sound quality?"
@@ -140,9 +141,12 @@ if __name__ == "__main__":
     # refined_retrieval(query, retrieved_chunks)
 
     # For single query test
-    # query = "What is the difference between the default sampling rate used in audio CDs versus the recommended sampling rate for improving amp sim sound quality?"
-    # question = {"id": 11, "question": query}
-    # print(run_single(question, use_query_refinement=True))
+    start_time = time.time()
+    query = "What is the difference between the default sampling rate used in audio CDs versus the recommended sampling rate for improving amp sim sound quality?"
+    question = {"id": 11, "question": query}
+    print(run_single(question, use_query_refinement=False))
+    total_time = time.time() - start_time
+    print(f"Processed 1 questions in {total_time:.2f} seconds without query refinement")
 
     # # get rerank document test
     # retrieved_chunks = get_all_retrieved_chunks(query)

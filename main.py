@@ -3,6 +3,7 @@ from retrievers.dense_retriever import DenseRetriever
 from retrievers.sparse_retriever import SparseRetriever
 from utils.combined_retriever import CombinedRetriever
 from utils.prompt_template import build_prompt
+import torch
 
 def getDenseContext(query: str = "What is a second brain?", top_k: int = 5):
     # Dense Search Retriever
@@ -64,8 +65,9 @@ if __name__ == "__main__":
     #     title="RuleBot: Legal AI Assistant",
     #     description="Ask questions based on legal rules and case studies. AI will reference rules and relevant cases."
     # ).launch()
-
-    getCombinedContext(max_docs=3)
+    print
+    print(torch.cuda.is_available())
+    # getCombinedContext(max_docs=3)
 
     # nltk.download('punkt')
     # nltk.download('punkt_tab')

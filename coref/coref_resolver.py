@@ -1,21 +1,25 @@
 # Following line is important even if it's not in use.
+import time
+
 from fastcoref import spacy_component
 import spacy
 from typing import List, Dict, Any, Optional
 import logging
+import torch
 
 
 class CorefResolver:
     """
     A class for resolving coreferences in text using SpaCy and FastCoref.
     Follows clean architecture principles for maintainability and extensibility.
+    Uses GPU when available for better performance.
     """
 
     def __init__(self,
                  model_name: str = "en_core_web_trf",
                  coref_model_architecture: str = "LingMessCoref",
                  coref_model_path: str = "biu-nlp/lingmess-coref",
-                 device: str = "cpu"):
+                 device: str = None):
         """
         Initialize the CorefResolver with specified models.
 
@@ -24,11 +28,20 @@ class CorefResolver:
             coref_model_architecture: The architecture for the coref model.
             coref_model_path: The path to the coref model.
             device: The device to use for computation (cpu or cuda).
+                   If None, will automatically use GPU if available.
         """
         self.model_name = model_name
         self.coref_model_architecture = coref_model_architecture
         self.coref_model_path = coref_model_path
-        self.device = device
+
+        # Auto-detect GPU if device is not specified
+        if device is None:
+            import torch
+            self.device = "cuda" if torch.cuda.is_available() else "cpu"
+            logging.info(f"Automatically selected device: {self.device}")
+        else:
+            self.device = device
+
         self.nlp = None
 
         # Initialize the NLP pipeline
@@ -41,14 +54,14 @@ class CorefResolver:
         try:
             self.nlp = spacy.load(self.model_name)
 
-            # Add the FastCoref pipe
+            # Add the FastCoref pipe with the detected or specified device
             self.nlp.add_pipe("fastcoref", config={
                 'model_architecture': self.coref_model_architecture,
                 'model_path': self.coref_model_path,
                 'device': self.device
             })
 
-            logging.info(f"Successfully initialized NLP pipeline with {self.model_name} and FastCoref")
+            logging.info(f"Successfully initialized NLP pipeline with {self.model_name} and FastCoref on {self.device}")
         except Exception as e:
             logging.error(f"Failed to initialize NLP pipeline: {str(e)}")
             raise
@@ -89,10 +102,10 @@ class CorefResolver:
 
         return all_resolved_docs
 
-
 # Example usage:
 if __name__ == "__main__":
     # Example documents
+    start_time = time.time()
     sample_documents = [
         {
             "doc_id": "<urn:uuid:0cf75b43-d690-4aa6-b3ca-f488ceb28ed9>",
@@ -116,6 +129,7 @@ if __name__ == "__main__":
         # os.system("python -m spacy download en_core_web_trf")
         # os.system("pip install fastcoref")
 
+        print(torch.cuda.is_available())
         # Create resolver
         resolver = CorefResolver()
 
@@ -132,6 +146,9 @@ if __name__ == "__main__":
 
     except Exception as e:
         print(f"Error: {str(e)}")
+
+    total_time = time.time() - start_time
+    print(f"Processed 1 coref in {total_time:.2f} seconds")
 
 
 

@@ -8,7 +8,7 @@ data = [
 ]
 
 test_question_path = "../data/question/current_questions.jsonl"
-test_answer_path = "../data/answer/current_answers.jsonl"
+test_answer_path = "../data/answer/test_question.jsonl"
 
 
 def merge_scores_and_keep_positive(entries):

@@ -68,6 +68,81 @@ class CombinedRetriever:
 
         return docs
 
+    def batch_retrieve(
+            self,
+            queries: List[str],
+            top_k: int = 5,
+            max_docs: int = 6
+    ) -> List[List[Dict[str, Any]]]:
+        """
+        Retrieve documents for a batch of queries by combining results from dense and sparse retrievers.
+
+        Args:
+            queries: List of query strings.
+            top_k: Number of top documents to retrieve from each retriever per query.
+            max_docs: Maximum combined documents to return per query.
+
+        Returns:
+            List of document lists, one per query.
+        """
+        # Get batch results from both retrievers
+        dense_batch_results = self.dense_retriever.batch_query(queries, top_k=top_k)
+        sparse_batch_results = self.sparse_retriever.batch_query(queries, top_k=top_k)
+
+        all_queries_docs = []
+
+        # Process each query's results
+        for dense_results, sparse_results in zip(dense_batch_results, sparse_batch_results):
+            num_dense = int(np.ceil(0.6 * max_docs))
+            num_sparse = max_docs - num_dense
+            seen_ids = set()
+            combined_docs = []
+
+            # Process dense results
+            dense_docs = []
+            for match in dense_results.get("matches", []):
+                doc_id = match["id"]
+                if doc_id not in seen_ids:
+                    seen_ids.add(doc_id)
+                    dense_docs.append({
+                        "doc_id": match["metadata"].get("doc_id", ""),
+                        "text": match["metadata"].get("text", ""),
+                        "score": match["score"],
+                        "source": "dense"
+                    })
+            # Take top dense docs
+            dense_docs.sort(key=lambda x: x["score"], reverse=True)
+            combined_docs.extend(dense_docs[:num_dense])
+
+            # Process sparse results
+            sparse_docs = []
+            hits = sparse_results.get("hits", {}).get("hits", [])
+            if hits:
+                # Normalize scores using softmax
+                scores = np.array([hit["_score"] for hit in hits])
+                norm_scores = softmax_score(scores)
+
+                for idx, hit in enumerate(hits):
+                    doc_id = hit["_id"]
+                    if doc_id not in seen_ids:
+                        seen_ids.add(doc_id)
+                        sparse_docs.append({
+                            "doc_id": hit["_source"].get("doc_id", ""),
+                            "text": hit["_source"].get("text", ""),
+                            "score": float(norm_scores[idx]),
+                            "source": "sparse"
+                        })
+            # Take top sparse docs
+            sparse_docs.sort(key=lambda x: x["score"], reverse=True)
+            combined_docs.extend(sparse_docs[:num_sparse])
+
+            # Final combined results
+            combined_docs.sort(key=lambda x: x["score"], reverse=True)
+            all_queries_docs.append(combined_docs[:max_docs])  # Ensure max_docs limit
+
+        return all_queries_docs
+
+
     @staticmethod
     def show_results(docs):
         print("Combined docs :\n", docs)
