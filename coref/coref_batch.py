@@ -73,7 +73,7 @@ class CorefResolver:
             logging.error(f"Batch processing failed: {str(e)}")
             return texts  # Return original texts on error
 
-    def resolve_documents(self, documents: List[Dict[str, Any]], batch_size: int = 20) -> List[Dict[str, Any]]:
+    def resolve_batch_documents(self, documents: List[Dict[str, Any]], batch_size: int = 20) -> List[Dict[str, Any]]:
         """Process documents in optimized batches while preserving structure"""
         # Extract texts and original order
         text_map = [(i, doc.get('text', '')) for i, doc in enumerate(documents)]
@@ -113,7 +113,8 @@ if __name__ == "__main__":
 
         # Process all documents in optimized batches
         start_time = time.time()
-        resolved_docs = resolver.resolve_documents(sample_documents, batch_size=20)
+        resolved_docs = resolver.resolve_batch_documents(sample_documents, batch_size=20)
+        print(resolved_docs)
 
         total_time = time.time() - start_time
         print(f"Processed {len(sample_documents)} documents in {total_time:.2f} seconds")

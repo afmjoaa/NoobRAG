@@ -73,7 +73,7 @@ class CombinedRetriever:
             queries: List[str],
             top_k: int = 5,
             max_docs: int = 6
-    ) -> List[List[Dict[str, Any]]]:
+    ) -> List[Dict[str, Any]]:
         """
         Retrieve documents for a batch of queries by combining results from dense and sparse retrievers.
 
@@ -88,6 +88,8 @@ class CombinedRetriever:
         # Get batch results from both retrievers
         dense_batch_results = self.dense_retriever.batch_query(queries, top_k=top_k)
         sparse_batch_results = self.sparse_retriever.batch_query(queries, top_k=top_k)
+        sparse_batch_results = sparse_batch_results.get("responses", [])
+        print(f"sparse_batch_results:\n {sparse_batch_results}")
 
         all_queries_docs = []
 
@@ -138,7 +140,7 @@ class CombinedRetriever:
 
             # Final combined results
             combined_docs.sort(key=lambda x: x["score"], reverse=True)
-            all_queries_docs.append(combined_docs[:max_docs])  # Ensure max_docs limit
+            all_queries_docs.extend(combined_docs[:max_docs])  # Ensure max_docs limit
 
         return all_queries_docs
 
@@ -156,7 +158,7 @@ if __name__ == "__main__":
     combined_retriever = CombinedRetriever(dense_retriever, sparse_retriever)
 
     query = "What is a second brain?"
-    docs = combined_retriever.retrieve(query, top_k=5, max_docs=6)
+    docs = combined_retriever.batch_retrieve([query * 10], top_k=5, max_docs=6)
     print("Combined docs :\n", docs)
 
 # EXAMPLE OUTPUT

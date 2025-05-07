@@ -29,6 +29,7 @@ class SparseRetriever:
             http_auth=auth,
             use_ssl=True,
             verify_certs=True,
+            timeout=60,
             connection_class=RequestsHttpConnection,
         )
 
@@ -43,11 +44,12 @@ class SparseRetriever:
         }
         return self.client.search(index=self.index_name, body=body)
 
-    def batch_query(self, queries: List[str], top_k: int = 10) -> List[Dict]:
+    def batch_query(self, queries: list[str], top_k: int = 10, n_parallel: int = 10) -> Dict:
+        """Sends a list of queries to OpenSearch and returns the results. Configuration of Connection Timeout might be needed for serving large batches of queries"""
         request = []
         for query in queries:
-            request.append({"index": self.index_name})
-            request.append({
+            req_head = {"index": self.index_name}
+            req_body = {
                 "query": {
                     "multi_match": {
                         "query": query,
@@ -55,7 +57,9 @@ class SparseRetriever:
                     }
                 },
                 "size": top_k,
-            })
+            }
+            request.extend([req_head, req_body])
+
         return self.client.msearch(body=request)
 
     @staticmethod

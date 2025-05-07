@@ -67,7 +67,7 @@ class NvidiaReranker:
         return text[:max_chars]
 
 
-def main():
+if __name__ == "__main__":
     # Configuration
     MODEL_NAME = "nvidia/nv-rerankqa-mistral-4b-v3"
     API_KEY = "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"  # Replace with your actual API key
@@ -81,8 +81,3 @@ def main():
     reranked_docs = reranker.rerank_documents(query=query, documents=input_documents)
 
     print(reranked_docs)
-
-
-
-if __name__ == "__main__":
-    main()

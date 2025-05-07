@@ -19,4 +19,7 @@ source ~/.bashrc
 conda activate /data/cat/ws/afjo837h-conda_vm/py3129june5
 
 # Run your script
-/data/cat/ws/afjo837h-conda_vm/py3129june5/bin/python coref/coref_batch.py
+#/data/cat/ws/afjo837h-conda_vm/py3129june5/bin/python coref/coref_batch.py
+#/data/cat/ws/afjo837h-conda_vm/py3129june5/bin/python topic/topic_batch.py
+#/data/cat/ws/afjo837h-conda_vm/py3129june5/bin/python reranker/mxbai_reranker.py
+/data/cat/ws/afjo837h-conda_vm/py3129june5/bin/python batch_with_gpu.py

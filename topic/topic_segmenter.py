@@ -23,15 +23,6 @@ class TextTopicAnalyzer:
             print(message)
 
     def _initialize_models(self, sentence_count):
-        """
-        Initialize the required models with settings optimized for small text.
-
-        Args:
-            sentence_count (int): Number of sentences in the input text
-
-        Returns:
-            tuple: Initialized models (embedding_model, vectorizer_model, umap_model, hdbscan_model)
-        """
         # Initialize embedding model
         embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
 
@@ -59,18 +50,6 @@ class TextTopicAnalyzer:
         return embedding_model, vectorizer_model, umap_model, hdbscan_model
 
     def _create_topic_model(self, embedding_model, vectorizer_model, umap_model, hdbscan_model):
-        """
-        Create the BERTopic model with the configured components.
-
-        Args:
-            embedding_model: The sentence transformer model
-            vectorizer_model: The count vectorizer model
-            umap_model: The UMAP dimensionality reduction model
-            hdbscan_model: The HDBSCAN clustering model
-
-        Returns:
-            BERTopic: Configured BERTopic model
-        """
         return BERTopic(
             embedding_model=embedding_model,
             vectorizer_model=vectorizer_model,
@@ -84,30 +63,11 @@ class TextTopicAnalyzer:
         )
 
     def _preprocess_text(self, text_chunk):
-        """
-        Preprocess the input text into sentences.
-
-        Args:
-            text_chunk (str): Input text to be processed
-
-        Returns:
-            list: List of sentence strings
-        """
         sentences = [sentence.strip() for sentence in text_chunk.split('.') if sentence.strip()]
         self._log(f"Processing {len(sentences)} sentences")
         return sentences
 
     def _group_sentences_by_topic(self, sentences, topics):
-        """
-        Group sentences by their assigned topics.
-
-        Args:
-            sentences (list): List of sentences
-            topics (list): List of topic IDs corresponding to each sentence
-
-        Returns:
-            dict: Dictionary mapping topic IDs to lists of sentences
-        """
         topic_sentences = {}
         for sentence, topic in zip(sentences, topics):
             if topic not in topic_sentences:
@@ -116,15 +76,6 @@ class TextTopicAnalyzer:
         return topic_sentences
 
     def _format_topic_paragraphs(self, topic_sentences):
-        """
-        Format topic sentences into paragraphs, one paragraph per topic.
-
-        Args:
-            topic_sentences (dict): Dictionary mapping topic IDs to lists of sentences
-
-        Returns:
-            dict: Dictionary mapping topic IDs to paragraph strings
-        """
         topic_paragraphs = {}
         for topic_num, sentences in topic_sentences.items():
             paragraph = " ".join([sentence + "." for sentence in sentences])
@@ -132,14 +83,6 @@ class TextTopicAnalyzer:
         return topic_paragraphs
 
     def _print_topic_results(self, topic_sentences, topic_model, topics):
-        """
-        Print detailed results about topics and their sentences.
-
-        Args:
-            topic_sentences (dict): Dictionary mapping topic IDs to lists of sentences
-            topic_model (BERTopic): The trained topic model
-            topics (list): List of topic IDs
-        """
         # Print discovered topics
         self._log("\nDiscovered Topics:\n")
         for topic_num in sorted(topic_sentences.keys()):

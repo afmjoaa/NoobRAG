@@ -1,7 +1,8 @@
 from typing import List, Dict, Any
+from multiprocessing.pool import ThreadPool
 
 
-def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 5) -> str:
+def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 10) -> str:
     """Construct a prompt from retrieved docs."""
     selected_docs = docs[:max_docs]
     context_parts = [
@@ -18,6 +19,17 @@ def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 5) -> s
         f"Question: {query}\n"
         "Answer:"
     )
+
+
+def build_batch_prompt(queries: List[str], batch_docs: List[List[Dict]], max_docs: int = 10) -> List[str]:
+    """Construct multiple prompts from batches of retrieved docs using parallel processing."""
+    with ThreadPool() as pool:
+        # Pair each query with its corresponding docs and apply build_prompt in parallel
+        prompts = pool.starmap(
+            build_prompt,
+            [(query, docs, max_docs) for query, docs in zip(queries, batch_docs)]
+        )
+    return prompts
 
 
 def get_refine_query(query: str) -> str:
