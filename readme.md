@@ -43,4 +43,9 @@ evaluated
 - Answers file: question, passages, final prompt, answer
 
 - batch requesting falcon is possible see https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/Falcon_Ai71_Usage.ipynb
-- 
+
+## Command to install required libraries
+`pip install transformers sentence-transformers spacy fastcoref nltk langchain-nvidia-ai-endpoints bertopic ai71 boto3 pinecone opensearch-py numpy umap odfpy hdbscan`
+
+## Install these two libraries for evaluation
+`pip install dotenv google-genai`
