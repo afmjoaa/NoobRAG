@@ -18,6 +18,9 @@ class TextTopicAnalyzer:
     def __init__(self, verbose=False):
         self.verbose = verbose
         self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        # Initialize models
+        embedding_model, vectorizer_model, umap_model, hdbscan_model = self._initialize_models(100)
+        self.topic_model = self._create_topic_model(embedding_model, vectorizer_model, umap_model, hdbscan_model)
         if self.verbose:
             print(f"Using device: {self.device}")
 
@@ -26,7 +29,7 @@ class TextTopicAnalyzer:
             print(message)
 
     def _initialize_models(self, sentence_count):
-        embedding_model = SentenceTransformer("all-MiniLM-L6-v2", device=self.device)
+        embedding_model = SentenceTransformer("all-mpnet-base-v2", device=self.device)
         vectorizer_model = CountVectorizer(stop_words="english", min_df=1)
 
         n_components = min(3, sentence_count - 1) if sentence_count > 1 else 1
@@ -91,12 +94,10 @@ class TextTopicAnalyzer:
             }]
 
         try:
-            # Initialize models
-            embedding_model, vectorizer_model, umap_model, hdbscan_model = self._initialize_models(len(all_sentences))
-            topic_model = self._create_topic_model(embedding_model, vectorizer_model, umap_model, hdbscan_model)
+
 
             # Perform topic modeling
-            topics, _ = topic_model.fit_transform(all_sentences)
+            topics, _ = self.topic_model.fit_transform(all_sentences)
 
             # Organize results by topic
             topic_groups = {}

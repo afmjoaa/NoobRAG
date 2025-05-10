@@ -3,8 +3,8 @@
 #SBATCH --output=joaa_coref_output_%j.log
 #SBATCH --error=joaa_coref_error_%j.log
 #SBATCH --gres=gpu:1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=64G
+#SBATCH --cpus-per-task=10
+#SBATCH --mem=128G
 #SBATCH --time=02:00:00
 
 module load CUDA/12.4  # CUDA version compatible with torch 2.5.1

@@ -1,5 +1,6 @@
 import json
-from typing import List, Dict
+from typing import List, Dict, Any
+from multiprocessing.pool import ThreadPool
 
 data = [
     {'doc_id': '<urn:uuid:0cf75b43-d690-4aa6-b3ca-f488ceb28ed9>',
@@ -36,10 +37,13 @@ def merge_scores_and_keep_positive(entries):
     return [doc for doc in entries if doc.get('score', 0) > 0]
 
 
-def merge_scores_and_keep_positive_batch(batch_docs: List[List[Dict]]):
-    for i, entries in enumerate(batch_docs):
-        current = merge_scores_and_keep_positive(entries)
-        batch_docs[i] = current
+def merge_scores_and_keep_positive_batch(batch_docs: List[List[Dict[str, Any]]]):
+    with ThreadPool() as pool:
+        # Process each entry group in parallel
+        results = pool.map(merge_scores_and_keep_positive, batch_docs)
+
+    # Update original list with processed results
+    batch_docs[:] = results
     return batch_docs
 
 

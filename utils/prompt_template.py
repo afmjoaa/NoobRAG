@@ -11,14 +11,26 @@ def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 10) -> 
     ]
     context_block = "\n\n".join(context_parts)
 
-    return (
-        "You are a knowledgeable assistant. Answer the following question using only the context provided below.\n\n"
-        "----\n"
-        f"{context_block}\n"
-        "----\n"
-        f"Question: {query}\n"
-        "Answer:"
-    )
+    prompt = f"""
+    Role: You are an information retrieval system that answers exclusively from provided context.
+
+    \nContext:
+    {context_block}\n
+
+    Strict Instructions:
+    1. Respond to the question using ONLY information present in the context
+    2. If answer requires information not in context, respond EXACTLY: "No information available"
+    3. Never:
+       - Use prior knowledge
+       - Speculate or make assumptions
+    4. Preserve numerical values and technical terms exactly
+    5. Maximum length: 200 tokens
+
+    \n
+    Question: {query}\n
+    Answer:""".strip()
+
+    return prompt
 
 
 def build_batch_prompt(queries: List[str], batch_docs: List[List[Dict]], max_docs: int = 10) -> List[str]:
@@ -56,10 +68,68 @@ Hypothetical Answer:
     return prompt
 
 
+def build_summary_prompt(query: str, context_paragraph: str) -> str:
+    prompt = f"""
+Instruction:
+Create a concise summary containing ALL key information from the context paragraph below. Follow these strict rules:
 
+1. Extract and list every factual element from the context
+2. Preserve exact technical terms, measurements, and relationships
+3. Never add explanations, comparisons, or information not explicitly stated
+4. The summary should be comprehensive, yet concise.
+5. Strict maximum: 460 tokens (enforce character count)
+
+Context Paragraph:
+{context_paragraph}
+    """.strip()
+
+    return prompt
+
+
+def build_batch_summary_flat_prompt(queries: List[str], batch_docs: List[List[Dict]]) -> List[str]:
+    # Flatten the list for parallel processing
+    flat_args = [
+        (queries[i], doc['passage'])
+        for i, docs in enumerate(batch_docs)
+        for doc in docs
+    ]
+
+    # Process in parallel
+    with ThreadPool() as pool:
+        flat_prompts = pool.starmap(build_summary_prompt, flat_args)
+
+    # # Reshape prompts into the original structure (List[List[str]])
+    # result = []
+    # idx = 0
+    # for docs in batch_docs:
+    #     num_docs = len(docs)
+    #     result.append(flat_prompts[idx:idx + num_docs])
+    #     idx += num_docs
+
+    return flat_prompts
 
 # result = falcon_generator.generate_answer(prompt).strip()
 #     print("\n[Refined Query]")
 #     print(result)
 
 # A strict length limit of 200 tokens
+#
+#     prompt = f"""
+# Query: {query}
+#
+# Context Paragraph:
+# {context_paragraph}
+#
+# Instruction:
+# Summarize the context paragraph in relation to the query above. Focus only on the information relevant to answering the query. The summary should be comprehensive, yet concise, and must not exceed 450 tokens. Avoid repeating the query or including irrelevant details. Do not add any information that is not in the context paragraph.
+# If the context paragraph does not directly provide information about the query, then just say "No information available"
+# """.strip()
+
+# (
+#         "You are a knowledgeable assistant. Answer the following question using only the context provided below.\n\n"
+#         "----\n"
+#         f"{context_block}\n"
+#         "----\n"
+#         f"Question: {query}\n"
+#         "Answer:"
+#     )

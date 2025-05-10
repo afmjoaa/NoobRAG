@@ -89,7 +89,6 @@ class CombinedRetriever:
         dense_batch_results = self.dense_retriever.batch_query(queries, top_k=top_k)
         sparse_batch_results = self.sparse_retriever.batch_query(queries, top_k=top_k)
         sparse_batch_results = sparse_batch_results.get("responses", [])
-        print(f"sparse_batch_results:\n {sparse_batch_results}")
 
         all_queries_docs = []
 
