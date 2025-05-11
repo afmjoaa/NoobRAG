@@ -24,8 +24,9 @@ def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 10) -> 
        - Use prior knowledge
        - Speculate or make assumptions
     4. Preserve numerical values and technical terms exactly
+    5. Make proper step by step calculations if formula and values are given
     5. Maximum length: 200 tokens
-
+    
     \n
     Question: {query}\n
     Answer:""".strip()
@@ -46,7 +47,12 @@ def build_batch_prompt(queries: List[str], batch_docs: List[List[Dict]], max_doc
 
 def get_refine_query(query: str) -> str:
     prompt = f"""
-You are a helpful assistant. Your task is to rewrite the following query to make it more specific, clear, and well-structured, while preserving its original intent.
+    You are an expert search query optimizer. Improve the following search query for a RAG system by following these steps:
+
+1. Identify the core information need and explicit/implicit requirements
+2. Resolve ambiguous pronouns/nouns and replace vague terms with specific technical language
+3. Make the query more specific, clear, and well-structured, while preserving its original intent
+4. Output ONLY the final refined query without commentary
 
 Original Query:
 "{query}"
@@ -56,16 +62,40 @@ Refined Query:
     return prompt
 
 
+def get_batch_refine_query(queries: List[str]) -> List[str]:
+    with ThreadPool() as pool:
+        prompts = pool.starmap(
+            get_refine_query,
+            [query for query in zip(queries)]
+        )
+    return prompts
+
+
 def get_hypothetical_answer(query: str) -> str:
     prompt = f"""
-You are a knowledgeable assistant. Using general domain expertise and commonly accepted facts, craft a concise and informative 3-line answer to the question below.
-Ensure the response is accurate, relevant, and uses appropriate technical or domain-specific language where applicable.
+    You are a a domain expert, generate a concise and informative 2-3 line answer to the question below for retrieval.
+    
+Your answer must:
+1. Contain essential factual claims and technical terminology
+2. Include specific named entities (people, organizations, theories, dates)
+3. Be exactly 2-3 sentences, optimized for maximum term overlap with relevant documents
+4. Focus strictly on verifiable information; avoid speculation, opinions.
+4. Output ONLY the Answer without commentary
 
 Question: {query}
 
-Hypothetical Answer:
+Answer:
 """.strip()
     return prompt
+
+
+def get_batch_hypothetical_answer(queries: List[str]) -> List[str]:
+    with ThreadPool() as pool:
+        prompts = pool.starmap(
+            get_hypothetical_answer,
+            [query for query in zip(queries)]
+        )
+    return prompts
 
 
 def build_summary_prompt(query: str, context_paragraph: str) -> str:
@@ -77,7 +107,7 @@ Create a concise summary containing ALL key information from the context paragra
 2. Preserve exact technical terms, measurements, and relationships
 3. Never add explanations, comparisons, or information not explicitly stated
 4. The summary should be comprehensive, yet concise.
-5. Strict maximum: 460 tokens (enforce character count)
+5. Strict maximum: 350 tokens
 
 Context Paragraph:
 {context_paragraph}

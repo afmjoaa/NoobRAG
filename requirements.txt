@@ -2,7 +2,7 @@ pinecone==5.4.2
 spacy==3.7.4
 fastcoref==2.1.6
 transformers==4.34.1
-torch==2.5.1
+torch==2.7.0
 ai71==0.0.23
 sentence-transformers==4.1.0
 bertopic==0.16.2

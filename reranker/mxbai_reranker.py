@@ -70,6 +70,7 @@ class MxbaiReranker:
         """
         # Validate input lengths
         if len(queries) != len(batch_documents):
+            print(f"length of queries: {len(queries)} and length of batch_documents: {len(batch_documents)}")
             raise ValueError("Number of queries must match number of document batches")
 
         # Prepare input strings and track document counts per query

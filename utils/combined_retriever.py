@@ -1,5 +1,5 @@
 import numpy as np
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Union
 
 from retrievers.dense_retriever import DenseRetriever
 from retrievers.sparse_retriever import SparseRetriever
@@ -72,8 +72,10 @@ class CombinedRetriever:
             self,
             queries: List[str],
             top_k: int = 5,
-            max_docs: int = 6
-    ) -> List[Dict[str, Any]]:
+            max_docs: int = 6,
+            batch_previous_docs: List = [],
+            isFlat: bool = True
+    ) -> Union[List[Dict[str, Any]], List[List[Dict[str, Any]]]]:
         """
         Retrieve documents for a batch of queries by combining results from dense and sparse retrievers.
 
@@ -92,8 +94,10 @@ class CombinedRetriever:
 
         all_queries_docs = []
 
+        if len(batch_previous_docs) == 0:
+            batch_previous_docs = [[] for _ in range(len(dense_batch_results))]
         # Process each query's results
-        for dense_results, sparse_results in zip(dense_batch_results, sparse_batch_results):
+        for dense_results, sparse_results, previous_docs in zip(dense_batch_results, sparse_batch_results, batch_previous_docs):
             num_dense = int(np.ceil(0.6 * max_docs))
             num_sparse = max_docs - num_dense
             seen_ids = set()
@@ -112,6 +116,17 @@ class CombinedRetriever:
                         "source": "dense"
                     })
             # Take top dense docs
+            if len(previous_docs) > 0:
+                # Build a set of doc_ids from previous docs where source is "dense"
+                previous_dense_doc_ids = {d["doc_id"] for d in previous_docs if d["source"] == "dense"}
+
+                # Filter dense docs
+                filtered_dense_docs = [
+                    d for d in dense_docs
+                    if not (d["source"] == "dense" and d["doc_id"] in previous_dense_doc_ids)
+                ]
+                dense_docs = filtered_dense_docs
+
             dense_docs.sort(key=lambda x: x["score"], reverse=True)
             combined_docs.extend(dense_docs[:num_dense])
 
@@ -134,12 +149,24 @@ class CombinedRetriever:
                             "source": "sparse"
                         })
             # Take top sparse docs
+            if len(previous_docs) > 0:
+                # Build a set of doc_ids from previous docs where source is "dense"
+                previous_sparse_doc_ids = {d["doc_id"] for d in previous_docs if d["source"] == "sparse"}
+                # Filter dense docs
+                filtered_sparse_docs = [
+                    d for d in sparse_docs
+                    if not (d["source"] == "sparse" and d["doc_id"] in previous_sparse_doc_ids)
+                ]
+                sparse_docs = filtered_sparse_docs
             sparse_docs.sort(key=lambda x: x["score"], reverse=True)
             combined_docs.extend(sparse_docs[:num_sparse])
 
             # Final combined results
             combined_docs.sort(key=lambda x: x["score"], reverse=True)
-            all_queries_docs.extend(combined_docs[:max_docs])  # Ensure max_docs limit
+            if isFlat:
+                all_queries_docs.extend(combined_docs[:max_docs])  # Ensure max_docs limit
+            else:
+                all_queries_docs.append(combined_docs[:max_docs])
 
         return all_queries_docs
 

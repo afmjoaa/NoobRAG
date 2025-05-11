@@ -6,6 +6,9 @@ from multiprocessing.pool import ThreadPool
 from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langchain_core.documents import Document
 import uuid
+from mistral_common.tokens.tokenizers.mistral import MistralTokenizer
+from mistral_common.protocol.instruct.messages import UserMessage
+from mistral_common.protocol.instruct.request import ChatCompletionRequest
 
 
 class NvidiaReranker:
@@ -18,6 +21,7 @@ class NvidiaReranker:
             for key in self.api_keys
         }
         self.key_index = 0
+        self.tokenizer = MistralTokenizer.v1()
         self.key_lock = threading.Lock()  # For thread-safe key rotation
 
     def _get_next_key(self):
@@ -62,7 +66,7 @@ class NvidiaReranker:
                 client = NVIDIARerank(model=self.model, api_key=key)
                 lc_docs = [
                     Document(
-                        page_content=self.truncate_text_estimate(doc['passage']),
+                        page_content=self.truncate_text_to_max_tokens(doc['passage']),
                         metadata={'uid': doc['uid']}
                     ) for doc in documents
                 ]
@@ -92,7 +96,8 @@ class NvidiaReranker:
             return e.response.status_code == 429
         return False
 
-    def batch_rerank(self, queries: List[str], batch_documents: List[List[Dict]], n_parallel: int = 10) -> List[List[Dict]]:
+    def batch_rerank(self, queries: List[str], batch_documents: List[List[Dict]], n_parallel: int = 10) -> List[
+        List[Dict]]:
         with ThreadPool(n_parallel) as pool:
             results = pool.starmap(self.rerank_documents, zip(queries, batch_documents))
         return results
@@ -101,16 +106,79 @@ class NvidiaReranker:
     def truncate_text_estimate(text: str, max_tokens: int = 300) -> str:
         return text[:max_tokens * 4]
 
+    def truncate_text_to_max_tokens(self, text: str, max_tokens: int = 400) -> str:
+        # Binary search for truncation point
+        low, high = 0, len(text)
+        best_fit = ""
+        while low <= high:
+            mid = (low + high) // 2
+            trial_text = text[:mid]
+
+            completion_request = ChatCompletionRequest(
+                messages=[UserMessage(content=trial_text)]
+            )
+            token_count = len(self.tokenizer.encode_chat_completion(completion_request).tokens)
+
+            if token_count <= max_tokens:
+                best_fit = trial_text
+                low = mid + 1
+            else:
+                high = mid - 1
+        return best_fit
+
 
 if __name__ == "__main__":
-    # Example usage
-    reranker = NvidiaReranker(
-        model="nvidia/nv-rerankqa-mistral-4b-v3",
-        api_keys=["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"]  # Add more keys
-    )
+    pass
+    # tokenizer = MistralTokenizer.v1()
+    #
+    # text = "Explain AI to me in a nutshell."
+    # # Wrap the string as a chat message
+    # completion_request = ChatCompletionRequest(
+    #     messages=[UserMessage(content=text)]
+    # )
+    # # Encode the chat message
+    # tokens = tokenizer.encode_chat_completion(completion_request).tokens
+    # print(tokens)
+    #
+    # def truncate_text_to_max_tokens(text: str, max_tokens: int) -> str:
+    #     # Binary search for truncation point
+    #     low, high = 0, len(text)
+    #     best_fit = ""
+    #
+    #     while low <= high:
+    #         mid = (low + high) // 2
+    #         trial_text = text[:mid]
+    #
+    #         completion_request = ChatCompletionRequest(
+    #             messages=[UserMessage(content=trial_text)]
+    #         )
+    #         token_count = len(tokenizer.encode_chat_completion(completion_request).tokens)
+    #
+    #         if token_count <= max_tokens:
+    #             best_fit = trial_text
+    #             low = mid + 1
+    #         else:
+    #             high = mid - 1
+    #
+    #     return best_fit
+    # truncated_text = truncate_text_to_max_tokens(text, 14)
+    # print(truncated_text)
+    #
+    # # Wrap the string as a chat message
+    # completion_request = ChatCompletionRequest(
+    #     messages=[UserMessage(content=truncated_text)]
+    # )
+    # # Encode the chat message
+    # tokens = tokenizer.encode_chat_completion(completion_request).tokens
+    # print(tokens)
 
-    results = reranker.rerank_documents(
-        query="Sample query",
-        documents=[{"passage": "Sample content..."}]  # Add your documents
-    )
-    print(results)
+    # reranker = NvidiaReranker(
+    #     model="nvidia/nv-rerankqa-mistral-4b-v3",
+    #     api_keys=["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"]  # Add more keys
+    # )
+    #
+    # results = reranker.rerank_documents(
+    #     query="Sample query",
+    #     documents=[{"passage": "Sample content..."}]  # Add your documents
+    # )
+    # print(results)
