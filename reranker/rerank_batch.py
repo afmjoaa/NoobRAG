@@ -1,3 +1,4 @@
+import random
 import time
 import threading
 from collections import deque
@@ -55,7 +56,7 @@ class NvidiaReranker:
         return documents
 
     def rerank_documents(self, query: str, documents: List[Dict]) -> List[Dict]:
-        max_retries = 3
+        max_retries = 30
         retry_delay = 30  # seconds
         for attempt in range(max_retries):
             try:
@@ -82,10 +83,11 @@ class NvidiaReranker:
                 return sorted_docs
             except Exception as e:
                 if self._is_ratelimit_exception(e) and attempt < max_retries - 1:
-                    print(f"Rate limit exceeded, retrying in {retry_delay} seconds...")
-                    time.sleep(retry_delay)
-                else:
-                    raise
+                    # Add jitter (randomness) to avoid thundering herd problem
+                    jitter = random.uniform(0.5, 1.5)
+                    actual_delay = retry_delay * jitter
+                    print(f"Rate limit exceeded, retrying in {actual_delay} seconds...")
+                    time.sleep(actual_delay)
         return []  # Fallback return
 
     def _is_ratelimit_exception(self, e):

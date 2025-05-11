@@ -23,9 +23,10 @@ def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 10) -> 
     3. Never:
        - Use prior knowledge
        - Speculate or make assumptions
-    4. Preserve numerical values and technical terms exactly
+    4. Preserve numerical values, technical terms and named entities exactly
     5. Make proper step by step calculations if formula and values are given
-    5. Maximum length: 200 tokens
+    6. Connecting statements if needed to answer the question clearly.
+    7. Maximum length: 200 tokens
     
     \n
     Question: {query}\n
@@ -47,12 +48,13 @@ def build_batch_prompt(queries: List[str], batch_docs: List[List[Dict]], max_doc
 
 def get_refine_query(query: str) -> str:
     prompt = f"""
-    You are an expert search query optimizer. Improve the following search query for a RAG system by following these steps:
+    You are an expert search query optimizer. Improve the following search query for a RAG system by following these strict instructions:
 
 1. Identify the core information need and explicit/implicit requirements
 2. Resolve ambiguous pronouns/nouns and replace vague terms with specific technical language
 3. Make the query more specific, clear, and well-structured, while preserving its original intent
-4. Output ONLY the final refined query without commentary
+4. Output ONLY the final refined query without commentary or explanation
+5. Query should be a single sentence, or two sentences at most.
 
 Original Query:
 "{query}"
@@ -104,10 +106,10 @@ Instruction:
 Create a concise summary containing ALL key information from the context paragraph below. Follow these strict rules:
 
 1. Extract and list every factual element from the context
-2. Preserve exact technical terms, measurements, and relationships
+2. Preserve exact technical terms, measurements, relationships and named entities
 3. Never add explanations, comparisons, or information not explicitly stated
 4. The summary should be comprehensive, yet concise.
-5. Strict maximum: 350 tokens
+5. Strict maximum: 400 tokens
 
 Context Paragraph:
 {context_paragraph}

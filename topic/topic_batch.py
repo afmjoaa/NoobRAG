@@ -42,6 +42,7 @@ class TextTopicAnalyzer:
         )
 
         hdbscan_model = HDBSCAN(
+            # core_dist_n_jobs=1,
             min_cluster_size=min(2, sentence_count),
             min_samples=1,
             metric='euclidean',

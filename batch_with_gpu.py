@@ -15,8 +15,9 @@ import json
 import time
 from typing import List, Dict, Any
 from itertools import chain
+import argparse
 
-
+start_time = time.time()
 # Global initialization of heavy components
 dense_retriever = DenseRetriever()
 sparse_retriever = SparseRetriever()
@@ -32,10 +33,6 @@ API_KEY_TWO = "nvapi-YAk5RrBWJEKe_ywlZnzPFjlR7X_S2T66u9Ir8n2CYKEs4sflPhXdcXkTqVl
 API_KEY_THREE = "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"
 API_KEY_FOUR = "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"
 nvidia_reranker = NvidiaReranker(model=MODEL_NAME, api_keys=[API_KEY_ONE, API_KEY_TWO, API_KEY_THREE, API_KEY_FOUR])
-
-question_path = "./data/question/questions.jsonl"
-answer_path = "./data/answer/answers.jsonl"
-refine_items_path = "./data/refine/refine_items.jsonl"
 
 summary_generator = MistralGenerator(
         api_keys=["59457d62865a1e3f69ae32e7f42148fafb7a2ea972e2b1438f749514892b8c8c",
@@ -124,7 +121,7 @@ def get_batch_refine_retrieved_chunks(batch_queries: List[str], batch_selected_r
 
 
 def get_batch_rerank_documents(batch_queries, retrieved_batch_chunks, retrieved_batch_chunks_count, use_mxbai_reranker=True):
-    coref_batch_size = 160
+    coref_batch_size = 200
     print(f"retrieved_batch_chunks: {len(retrieved_batch_chunks)}")
     coref_resolved_docs = resolver.resolve_batch_documents(retrieved_batch_chunks, batch_size=coref_batch_size)
 
@@ -253,17 +250,18 @@ def run_refine_single_batch(batch_selected_refine_candidates: List[Dict], use_mx
         save_to_jsonl(final_output, file_path=answer_path)
 
 
-# Implement MPI here
-# def run_pipeline(questions_path, use_mxbai_reranker=True):
-#     with open(questions_path, 'r', encoding='utf-8') as f:
-#         questions = [json.loads(line) for line in f]
-#
-#     for question in questions:
-#         run_single(question, use_topic_combiner, use_mxbai_reranker)
-
-
+# Maximum 100 questions at a time
 if __name__ == "__main__":
-    start_time = time.time()
+    # start_time = time.time()
+    parser = argparse.ArgumentParser(description='Process input arguments.')
+    parser.add_argument('--job-id', type=str, required=True, help='Slurm Job ID')
+    args = parser.parse_args()
+    print(f"JOBID: {args.job_id}\n")
+
+    question_path = "./data/question/current_questions.jsonl"
+    answer_path = f"./data/answer/answers_{args.job_id}.jsonl"
+    refine_items_path = f"./data/refine/refine_items_{args.job_id}.jsonl"
+
     with open(question_path, 'r', encoding='utf-8') as f:
         questions = [json.loads(line) for line in f]
     run_single_batch(questions)
@@ -275,7 +273,16 @@ if __name__ == "__main__":
 
     total_time = time.time() - start_time
     total_question = len(questions) + len(refine_items)
-    print(f"Processed {total_question} questions in {total_time:.2f} seconds")
+    print(f"\nProcessed {total_question} questions in {total_time:.2f} seconds")
     print(f"Took {(total_time/total_question):.2f} seconds each question")
+
+
+# Implement MPI here
+# def run_pipeline(questions_path, use_mxbai_reranker=True):
+#     with open(questions_path, 'r', encoding='utf-8') as f:
+#         questions = [json.loads(line) for line in f]
+#
+#     for question in questions:
+#         run_single(question, use_topic_combiner, use_mxbai_reranker)
 
 

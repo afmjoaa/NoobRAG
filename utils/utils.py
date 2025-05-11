@@ -34,7 +34,11 @@ def merge_scores_and_keep_positive(entries):
             del entry['uid']
     # Sort the entries by the updated 'score' in descending order
     entries.sort(key=lambda x: x['score'], reverse=True)
-    return [doc for doc in entries if doc.get('score', 0) > 0]
+    items = [doc for doc in entries if doc.get('score', 0) > 0]
+    if len(items) == 0:
+        return [entries[0]]
+    else:
+        return items
 
 
 def merge_scores_and_keep_positive_batch(batch_docs: List[List[Dict[str, Any]]]):
@@ -47,29 +51,32 @@ def merge_scores_and_keep_positive_batch(batch_docs: List[List[Dict[str, Any]]])
     return batch_docs
 
 
-def create_test_question():
+def create_test_question(question_count: int, start: int):
     # Load the JSONL file
-    file_path = "../data/generated/results_id_0facd9cc-06f4-4922-8c1f-e29811d5a08c_user_id_bfc67a4c-41ca-4a55-87c0-85fe0e346a90.jsonl"
+    file_path = "../data/combined_data.jsonl"
     processed_data = []
     with open(file_path, "r", encoding="utf-8") as file:
         for idx, line in enumerate(file, start=1):
-            item = json.loads(line)
-            processed_item = {
-                "id": idx,
-                "question": item.get("question"),
-                "answer_ground": item.get("answer"),
-                "context": item.get("context"),
-                "document_ids": item.get("document_ids")
-            }
-            processed_data.append(processed_item)
+            if idx > start:
+                item = json.loads(line)
+                processed_item = {
+                    "id": idx,
+                    "question": item.get("question"),
+                    "answer_ground": item.get("answer"),
+                    "context": item.get("context"),
+                    "document_ids": item.get("document_ids")
+                }
+                processed_data.append(processed_item)
+                if idx == question_count+start:
+                    break
     # Save the modified data to a new JSONL file
     output_path = test_question_path
     with open(output_path, "w", encoding="utf-8") as file:
         for item in processed_data:
-            file.write(json.dumps(item) + "\n")
+            file.write(json.dumps(item, ensure_ascii=False) + "\n")
 
 
 if __name__ == "__main__":
     # Output the modified array
     # print(merge_scores_and_clean(data))
-    create_test_question()
+    create_test_question(question_count=500, start=750)

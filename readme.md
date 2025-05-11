@@ -49,3 +49,7 @@ evaluated
 
 ## Install these two libraries for evaluation
 `pip install dotenv google-genai`
+
+
+
+# Change the question path in batch_with_gpu_cluster.py and then run the cluster.sh
