@@ -21,8 +21,8 @@ def save_to_jsonl(final_output, file_path=test_answer_path):
     with open(file_path, 'a', encoding='utf-8') as f:
         json_line = json.dumps(final_output, ensure_ascii=False)
         f.write(json_line + '\n')
-        f.flush()
-        f.close()
+        # f.flush()
+        # f.close()
 
 
 if __name__ == "__main__":

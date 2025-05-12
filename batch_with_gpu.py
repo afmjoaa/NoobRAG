@@ -53,7 +53,7 @@ def update_passages_with_summaries(
     flat_prompts = build_batch_summary_flat_prompt(batch_queries, batch_combine_docs)
 
     # Generate summaries in one batch call
-    flat_summaries = summary_generator.batch_generate_answer(flat_prompts)
+    flat_summaries = falcon_generator.batch_generate_answer(flat_prompts)
 
     # Reshape summaries to match original nested structure
     nested_summaries = []
@@ -96,13 +96,13 @@ def get_batch_refine_retrieved_chunks(batch_queries: List[str], batch_selected_r
 
     # get the refined question
     batch_refine_query_prompt = get_batch_refine_query(batch_queries)
-    batch_refine_query = summary_generator.batch_generate_answer(batch_refine_query_prompt)
+    batch_refine_query = summary_generator.batch_generate_answer(batch_refine_query_prompt, batch_queries)
     batch_refine_query_docs = combined_retriever.batch_retrieve(queries=batch_refine_query, top_k=29, max_docs=15, batch_previous_docs=batch_previous_docs, isFlat=False)
 
     # get the refined answer
     current_batch_previous_docs = [a + b for a, b in zip(batch_previous_docs, batch_refine_query_docs)]
     batch_hypothetical_answer_prompt = get_batch_hypothetical_answer(batch_refine_query)
-    batch_hypothetical_answer = summary_generator.batch_generate_answer(batch_hypothetical_answer_prompt)
+    batch_hypothetical_answer = summary_generator.batch_generate_answer(batch_hypothetical_answer_prompt, batch_queries)
     batch_hypothetical_answer_docs = combined_retriever.batch_retrieve(queries=batch_hypothetical_answer, top_k=38, max_docs=15, batch_previous_docs=current_batch_previous_docs, isFlat=False)
 
     print(f"\nOriginal query: {batch_queries[0]}\n"

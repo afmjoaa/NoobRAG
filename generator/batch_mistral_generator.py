@@ -81,7 +81,7 @@ class MistralGenerator:
             return e.response.status_code == 429
         return False
 
-    def batch_generate_answer(self, prompts: List[str], n_parallel: int = 10, n_retries: int = 5) -> List[str]:
+    def batch_generate_answer(self, prompts: List[str], queries: List[str], n_parallel: int = 10, n_retries: int = 8) -> List[str]:
         """Batch generate with thread pooling and key rotation"""
         results = [None] * len(prompts)
 
@@ -97,7 +97,7 @@ class MistralGenerator:
                     results[index] = future.result()
                 except Exception as e:
                     print(f"Request failed for prompt at index {index}: {e}")
-                    results[index] = None
+                    results[index] = queries[index]
 
         return results
 
