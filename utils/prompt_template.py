@@ -2,11 +2,11 @@ from typing import List, Dict, Any
 from multiprocessing.pool import ThreadPool
 
 
-def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 10) -> str:
+def build_prompt(query: str, docs: List[Dict[str, Any]], max_docs: int = 10, context_in: str = 'passage') -> str:
     """Construct a prompt from retrieved docs."""
     selected_docs = docs[:max_docs]
     context_parts = [
-        f"Context Document {i + 1}: {doc['passage']}"
+        f"Context Document {i + 1}: {doc[context_in]}"
         for i, doc in enumerate(selected_docs)
     ]
     context_block = "\n\n".join(context_parts)

@@ -2,7 +2,7 @@ from mpi4py import MPI
 import json
 from coref.coref_resolver import CorefResolver
 from generator.falcon_generator import FalconGenerator
-from main import getCombinedContext
+from basic_rag import getCombinedContext
 from reranker.mxbai_reranker import MxbaiReranker
 from reranker.nvidia_reranker import NvidiaReranker
 from topic.combine_topics import cluster_documents_with_berttopic
@@ -18,7 +18,7 @@ falcon_generator = FalconGenerator()
 
 # You could also rotate keys with rank if you have a pool of API keys
 MODEL_NAME = "nvidia/nv-rerankqa-mistral-4b-v3"
-API_KEY = "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"
+API_KEY = "nvapi----" # TODO: Replace with your actual API key
 
 nvidia_reranker = NvidiaReranker(model=MODEL_NAME, api_key=API_KEY)
 mxbai_reranker = MxbaiReranker()

@@ -1,3 +1,7 @@
+import json
+import os
+
+from dotenv import load_dotenv
 from langchain_nvidia_ai_endpoints import NVIDIARerank
 from langchain_core.documents import Document
 from typing import List, Dict
@@ -70,14 +74,15 @@ class NvidiaReranker:
 if __name__ == "__main__":
     # Configuration
     MODEL_NAME = "nvidia/nv-rerankqa-mistral-4b-v3"
-    API_KEY = "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"  # Replace with your actual API key
+    load_dotenv()
+    nvidia_api_keys = json.loads(os.getenv("NVIDIA_API_KEYS", "[]"))
 
     # Sample data
     query = "What is Left and Right Brain technology?"
     input_documents = get_topic_text_with_info()
 
     # Process the documents
-    reranker = NvidiaReranker(model=MODEL_NAME, api_key=API_KEY)
+    reranker = NvidiaReranker(model=MODEL_NAME, api_key=nvidia_api_keys[0])
     reranked_docs = reranker.rerank_documents(query=query, documents=input_documents)
 
     print(reranked_docs)

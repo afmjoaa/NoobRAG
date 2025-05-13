@@ -4,6 +4,7 @@ import time
 import threading
 from collections import deque
 from together import Together
+from dotenv import load_dotenv
 
 
 class MistralGenerator:
@@ -103,14 +104,19 @@ class MistralGenerator:
 
 if __name__ == "__main__":
     # Initialize with multiple API keys
+    import os, json
+
+    load_dotenv()
+    api_keys = json.loads(os.getenv("TOGETHER_AI_API_KEYS", "[]"))
     summary_generator = MistralGenerator(
-        api_keys=["59457d62865a1e3f69ae32e7f42148fafb7a2ea972e2b1438f749514892b8c8c", "2a6714a7f23ea83446e29cd1ac8c5fb4906aa720035c61fb779c92987db0b8aa"],  # Add your actual API keys
+        api_keys=api_keys,
         rpm_limit=59  # Per-key RPM limit
     )
 
     # Batch processing with parallel requests and key management
     prompts = ["Tell me a joke", "Explain quantum computing briefly"]
-    results = summary_generator.batch_generate_answer(prompts)
+    queries = ["Tell me a joke", "Explain quantum computing briefly"]
+    results = summary_generator.batch_generate_answer(prompts, queries)
     print(results)
     
     

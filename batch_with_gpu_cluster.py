@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+
 from coref.coref_batch import CorefResolver
 from generator.batch_falcon_generator import FalconGenerator
 from generator.batch_mistral_generator import MistralGenerator
@@ -16,8 +18,12 @@ import time
 from typing import List, Dict, Any
 from itertools import chain
 import argparse
+import os, json
+
 
 start_time = time.time()
+load_dotenv()
+
 # Global initialization of heavy components
 dense_retriever = DenseRetriever()
 sparse_retriever = SparseRetriever()
@@ -28,41 +34,12 @@ topic_analyzer = TextTopicAnalyzer(verbose=False)
 falcon_generator = FalconGenerator()
 mxbai_reranker = MxbaiReranker()
 MODEL_NAME = "nvidia/nv-rerankqa-mistral-4b-v3"
-API_KEY_ONE = "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"
-API_KEY_TWO = "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"
-API_KEY_THREE = "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"
-API_KEY_FOUR = "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"
-API_KEY_FIVE = "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"
-API_KEY_SIX = "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"
-API_KEY_SEVEN = "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"
-API_KEY_EIGHT = "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"
-API_KEY_NINE = "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"
-API_KEY_TEN = "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"
-API_KEY_ELEVEN = "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"
-API_KEY_TWELVE = "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"
-nvidia_reranker = NvidiaReranker(model=MODEL_NAME, api_keys=[API_KEY_ONE, API_KEY_TWO, API_KEY_THREE, API_KEY_FOUR, API_KEY_FIVE, API_KEY_SIX, API_KEY_SEVEN, API_KEY_EIGHT, API_KEY_NINE, API_KEY_TEN, API_KEY_ELEVEN, API_KEY_TWELVE])
+nvidia_api_keys = json.loads(os.getenv("NVIDIA_API_KEYS", "[]"))
+nvidia_reranker = NvidiaReranker(model=MODEL_NAME, api_keys=nvidia_api_keys)
 
-# "59457d62865a1e3f69ae32e7f42148fafb7a2ea972e2b1438f749514892b8c8c",
-#  "2a6714a7f23ea83446e29cd1ac8c5fb4906aa720035c61fb779c92987db0b8aa",
-#  "e38a2f42303bd976b218d8904116a473f78d1467b36015e730471d36a8c78d48",
-#  "583c84df297987f1c992c063ce2a291deb9a8dcd3781764344021c82286c4eeb",
-#  "6d3a4f46600c7c305f4dd4c5e99830da893515d3272cf868e87efae61af72b89"
+mistral_api_keys = json.loads(os.getenv("TOGETHER_AI_API_KEYS", "[]"))
 summary_generator = MistralGenerator(
-        api_keys=[
-                  "7444eff0e727f87fbb2b1ca9d2ff683bf8b71afc1812e47f7ea3d566065703a4",
-                  "3c1f55995be6cfb29afbd910b462dca7f605f845d380d3651e800d957a678808",
-                  "ff36ccb396325271c64b4695a7a8dc29cd881e14711fc661621480a68ffb03e8",
-                  "b3a29be07cb6a230eb5c495ff8d5aaad9e4dc138e2999498702039e0f7db0978",
-                  "91d99401a275929757b6de5d0ce8f85f0b1307db813ef5a607c4f6a6f516d379",
-                  "15e22969e90e5a99314094423c0f24da0bcb1a7883b0b0262b2fb05eae0c0934",
-                  "3e7d9d7007e861b956d2ddd57002ac74d5d314af6366806f6ed586ef97ee0a85",
-                  "df6739e54e7782156531134bd63e6cfaebe6b71b0618eb4b4498899da542b583",
-                  "4403c671c1d51cfda67c8b932c178aabdbcf4a7d0f352e1485f3263747501e03",
-                  "f78caded874f3adad52ce7ceb21b43567ed4d56048f26d2ef3dcdad1b74e5020",
-                  "09a14438d938b9300d5d1a67066aae40753c07e7e79b144599db73d2a964d345",
-                  "09a14438d938b9300d5d1a67066aae40753c07e7e79b144599db73d2a964d345",
-                  "5a938775d8d38dd3a0a94b3a2c6992c5f22ed86ed376898336c810ce7b5deacb"
-                  ],  # Add your actual API keys
+        api_keys=mistral_api_keys,  # Add your actual API keys
         rpm_limit=59  # Per-key RPM limit
     )
 
@@ -294,7 +271,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(f"JOBID: {args.job_id}\n")
 
-    # question_path = "./data/question/questions.jsonl"
+    # question_path = "./data/question/test_questions.jsonl"
     question_path = "./data/question/challenge_questions.jsonl"
     answer_path = f"./data/answer/answers_{args.job_id}_{args.task_id}.jsonl"
     refine_items_path = f"./data/refine/refine_items_{args.job_id}_{args.task_id}.jsonl"

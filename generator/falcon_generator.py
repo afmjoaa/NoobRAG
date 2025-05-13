@@ -1,10 +1,12 @@
 from ai71 import AI71
+from dotenv import load_dotenv
+import os
 
 
 class FalconGenerator:
-    __API_KEY = "ai71-api-b1e07fa1-d007-41cd-8306-85fc952e12a6"
-
     def __init__(self, model_name: str = "tiiuae/falcon3-10b-instruct"):
+        load_dotenv()
+        self.__API_KEY = os.getenv("AI71_API_KEY")
         self.client = AI71(self.__API_KEY)
         self.model_name = model_name
 

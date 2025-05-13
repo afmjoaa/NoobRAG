@@ -44,12 +44,20 @@ evaluated
 
 - batch requesting falcon is possible see https://huggingface.co/spaces/LiveRAG/Challenge/blob/main/Operational_Instructions/Falcon_Ai71_Usage.ipynb
 
-## Command to install required libraries
-`pip install transformers sentence-transformers spacy fastcoref nltk langchain-nvidia-ai-endpoints bertopic ai71 boto3 pinecone opensearch-py numpy umap odfpy hdbscan`
+## Command to replicate the conda environment
+`conda env create -f environment.yml`
 
-## Install these two libraries for evaluation
-`pip install dotenv google-genai`
+## You can also use pip to install dependencies, after activating your conda environment
+`pip install -r requirements.txt`
 
 
+## **Batch with gpu cluster** -- This is used to generate answer for LiveRAG challenge (To get 500 or more questions answered)
 
-# Change the question path in batch_with_gpu_cluster.py and then run the cluster.sh
+## Batch with gpu (To get upto 100 questions answered)
+
+## Single with cpu without query refinement (To get only one question answered)
+
+## Basic RAG (To check if the basic rag system (Without query refinement, and reranking) works or not)
+
+
+[//]: # (# Change the question path in batch_with_gpu_cluster.py and then run the cluster.sh)

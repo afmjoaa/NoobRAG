@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 MAX_WORKERS = 4  # Using exactly 4 cores as requested
 MAX_THREAD_WORKERS = 16  # For I/O bound tasks
 MODEL_NAME = "nvidia/nv-rerankqa-mistral-4b-v3"
-API_KEY = "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"  # TODO: Replace with your actual API key
+API_KEY = "nvapi-----"  # TODO: Replace with your actual API key
 
 # Resource management
 torch.set_num_threads(2)  # Lower thread count per process

@@ -6,7 +6,7 @@ from hdbscan import HDBSCAN
 from typing import List, Dict, Any
 
 from coref.coref_resolver import CorefResolver
-from main import getCombinedContext
+from basic_rag import getCombinedContext
 
 
 class TextTopicAnalyzer:

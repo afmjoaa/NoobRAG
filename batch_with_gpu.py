@@ -1,3 +1,5 @@
+from dotenv import load_dotenv
+
 from coref.coref_batch import CorefResolver
 from generator.batch_falcon_generator import FalconGenerator
 from generator.batch_mistral_generator import MistralGenerator
@@ -11,13 +13,14 @@ from utils.prompt_template import build_batch_prompt, build_batch_summary_flat_p
     get_batch_hypothetical_answer
 from utils.save_to_file import save_to_jsonl
 from utils.utils import merge_scores_and_keep_positive_batch
-import json
 import time
 from typing import List, Dict, Any
 from itertools import chain
 import argparse
+import os, json
 
 start_time = time.time()
+load_dotenv()
 # Global initialization of heavy components
 dense_retriever = DenseRetriever()
 sparse_retriever = SparseRetriever()
@@ -28,19 +31,12 @@ topic_analyzer = TextTopicAnalyzer(verbose=False)
 falcon_generator = FalconGenerator()
 mxbai_reranker = MxbaiReranker()
 MODEL_NAME = "nvidia/nv-rerankqa-mistral-4b-v3"
-API_KEY_ONE = "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"
-API_KEY_TWO = "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"
-API_KEY_THREE = "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"
-API_KEY_FOUR = "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"
-nvidia_reranker = NvidiaReranker(model=MODEL_NAME, api_keys=[API_KEY_ONE, API_KEY_TWO, API_KEY_THREE, API_KEY_FOUR])
+nvidia_api_keys = json.loads(os.getenv("NVIDIA_API_KEYS", "[]"))
+nvidia_reranker = NvidiaReranker(model=MODEL_NAME, api_keys=nvidia_api_keys)
 
+mistral_api_keys = json.loads(os.getenv("TOGETHER_AI_API_KEYS", "[]"))
 summary_generator = MistralGenerator(
-        api_keys=["59457d62865a1e3f69ae32e7f42148fafb7a2ea972e2b1438f749514892b8c8c",
-                  "2a6714a7f23ea83446e29cd1ac8c5fb4906aa720035c61fb779c92987db0b8aa",
-                  "e38a2f42303bd976b218d8904116a473f78d1467b36015e730471d36a8c78d48",
-                  "583c84df297987f1c992c063ce2a291deb9a8dcd3781764344021c82286c4eeb",
-                  "6d3a4f46600c7c305f4dd4c5e99830da893515d3272cf868e87efae61af72b89"
-                  ],  # Add your actual API keys
+        api_keys=mistral_api_keys,  # Add your actual API keys
         rpm_limit=59  # Per-key RPM limit
     )
 
@@ -258,7 +254,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
     print(f"JOBID: {args.job_id}\n")
 
-    question_path = "./data/question/current_questions.jsonl"
+    question_path = "./data/question/test_questions.jsonl"
     answer_path = f"./data/answer/answers_{args.job_id}.jsonl"
     refine_items_path = f"./data/refine/refine_items_{args.job_id}.jsonl"
 
@@ -275,14 +271,5 @@ if __name__ == "__main__":
     total_question = len(questions) + len(refine_items)
     print(f"\nProcessed {total_question} questions in {total_time:.2f} seconds")
     print(f"Took {(total_time/total_question):.2f} seconds each question")
-
-
-# Implement MPI here
-# def run_pipeline(questions_path, use_mxbai_reranker=True):
-#     with open(questions_path, 'r', encoding='utf-8') as f:
-#         questions = [json.loads(line) for line in f]
-#
-#     for question in questions:
-#         run_single(question, use_topic_combiner, use_mxbai_reranker)
 
 
