@@ -28,7 +28,7 @@ if not API_KEYS:
 key_cycler = itertools.cycle(API_KEYS)
 
 # --- Rate Limiting Globals (Per Key) ---
-REQUEST_LIMIT = 10
+REQUEST_LIMIT = 5
 TIME_WINDOW_SECONDS = 60
 # Dictionary to store timestamps deque for each API key
 key_request_timestamps = {key: deque() for key in API_KEYS}
@@ -102,7 +102,7 @@ def _apply_rate_limit(api_key: str):
         timestamps.append(current_time)
 
 
-def get_llm_evaluation_score(prompt: str, api_key: str, model_name: str = "gemini-1.5-flash") -> int | None:
+def get_llm_evaluation_score(prompt: str, api_key: str, model_name: str = "gemini-2.0-flash") -> int | None:
     """Sends a prompt to the Gemini model using a specific API key and attempts to parse an integer score, respecting rate limits."""
     try:
         _apply_rate_limit(api_key)  # Enforce rate limit for the specific key
@@ -185,7 +185,6 @@ def evaluate_answer(question: str, answer: str, context: str) -> dict:
     }
 
 
-# --- Example Usage ---
 if __name__ == "__main__":
     # Define the output log file
     log_filename = "evaluation_log.txt"
@@ -194,12 +193,13 @@ if __name__ == "__main__":
         os.remove(log_filename)
 
     # Function to write evaluation details to the log file
-    def log_evaluation(filename, q, a, scores, call_num=None):
+    def log_evaluation(filename, id, q, a, scores, call_num=None):
         with open(filename, 'a', encoding='utf-8') as f:
             if call_num:
                 f.write(f"--- Evaluation Call {call_num} ---\n")
             else:
                 f.write("--- Evaluation Run ---\n")
+            f.write(f"ID: {id}\n")
             f.write(f"Question: {q}\n")
             f.write(f"Answer: {a}\n")
             f.write(f"Relevance Score: {scores['relevance_score']}\n")
@@ -216,14 +216,26 @@ if __name__ == "__main__":
         # Remove any leading/trailing whitespace
         return context.strip()
 
-    with open('answers_val/answers.jsonl', 'r') as f:
+    with open('data/answer/last.jsonl', 'r') as f:
         i = 1
+        total_faithfulness = 0
+        total_relevance = 0
         for line in f:
             data = json.loads(line)
             context = get_context(data['passages'])
             scores_test = evaluate_answer(data['question'], data['answer'], context)
-            log_evaluation(log_filename, data['question'],
+            try:
+                total_relevance = total_relevance + scores_test['relevance_score']
+                total_faithfulness = total_faithfulness + scores_test['faithfulness_score']
+            except TypeError:
+                print(f"Error: Received None for scores. Skipping this entry.")
+
+            log_evaluation(log_filename, data['id'], data['question'],
                            data['answer'], scores_test, call_num=i+1)
             i = i+1
+        with open(log_filename, 'a', encoding='utf-8') as f:
+            f.write(f"Total Relevance Score: {total_relevance}\n")
+            f.write(f"Total Faithfulness Score: {total_faithfulness}\n")
+            f.write("-" * 20 + "\n\n")
 
     print(f"\nFinished examples. All results logged to {log_filename}")
